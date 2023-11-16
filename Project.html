@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Shoot Guns!</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P" rel="stylesheet">
+    <link href="style.css" rel="stylesheet"> 
+</head>
+<body>
+    <div id="game-container">
+        <canvas width="1000px" height="1000px"></canvas>
+
+        <svg xmlns="http://www.w3.org/2000/svg" id="counter">
+            <text x="10" y="35">
+                TIME:<tspan id="time-remaining">20</tspan>
+            </text>
+        </svg>
+
+        <svg xmlns="http://www.w3.org/2000/svg" id="game-start">
+            <defs>
+                <linearGradient id="title-fill" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0.2" stop-color="red" />
+                    <stop offset="0.4" stop-color="yellow" />
+                    <stop offset="0.6" stop-color="green" />
+                    <stop offset="0.8" stop-color="purple" />
+                </linearGradient>
+            </defs>
+            <text id="game-title" x="50%" y="45%">KYS!</text>
+            <text x="50%" y="60%">Click here to start the game</text>
+        </svg>
+
+        <svg xmlns="http://www.w3.org/2000/svg" id="game-over" style="display: none">
+            <defs>
+                <linearGradient id="game-over-fill" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0" stop-color="red" />
+                    <stop offset="0.5" stop-color="yellow" />
+                    <stop offset="1" stop-color="red" />
+                </linearGradient>
+            </defs>
+            <text x="50%" y="50%">
+                Time's up! You have killed
+                <tspan id="final-gems">0</tspan>
+                enemy(ies).
+            </text>
+        </svg>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.1.min.js"></script>
+    <script>
+    $(document).ready(function() {
+        /* Get the canvas and 2D context */
+        const cv = $("canvas").get(0);
+        const ctx = cv.getContext("2d");
+
+        /* Create the sounds
+        const sounds = {
+            background: new Audio("background.mp3"),
+            collect: new Audio("collect.mp3"),
+            gameover: new Audio("gameover.mp3")
+        };*/
+
+        const totalGameTime = 60*3;   // Total game time in seconds
+        let gameStartTime = 0;      // The timestamp when the game starts
+        let killCounts = 0;      // The number of gems collected in the game
+
+        /* Handle the start of the game */
+        $("#game-start").on("click", function() {
+
+            /* Hide the start screen */
+            $("#game-start").hide();
+			
+			/////////////////////////////////
+            // 3. Load the crosshair image
+
+            // 4. Add mouse event listeners to track the cursor position
+            cv.addEventListener("mousemove", function(event) {
+                const rect = cv.getBoundingClientRect();
+                const mouseX = event.clientX - rect.left;
+                const mouseY = event.clientY - rect.top;
+
+                // 5. Clear the canvas
+                ctx.clearRect(0, 0, cv.width, cv.height);
+
+                // 6. Draw the crosshair image at the cursor position
+                ctx.drawImage(crosshairImg, mouseX - crosshairImg.width / 2, mouseY - crosshairImg.height / 2);
+            });
+			/////////////////////////////////
+
+            
+        });
+    });
+    </script>
+</body>
+</html>
