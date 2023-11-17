@@ -26,12 +26,12 @@
     --button-background-hover: #f8b58b;
 }
 * {
+    cursor: url("crosshair.png"), auto;
     color: var(--font-color);
     box-sizing: border-box;
 }
 body {
     font-family: "Press Start 2P", sans-serif;
-    cursor: url("crosshair.png"), auto;
     background-image: url("../Assets/background/7292022_2_01.jpg");
     background-repeat: no-repeat;
     background-attachment: fixed;
