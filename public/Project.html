@@ -86,12 +86,23 @@
         const cv = $("canvas").get(0);
         const ctx = cv.getContext("2d");
 
-        /* Create the sounds
+        //Create the sounds
+
+        const sounds = {
+            pistol: new Audio("../Assets/sfx/pistol_shot.mp3")
+        }
+
+        /* 
         const sounds = {
             background: new Audio("background.mp3"),
             collect: new Audio("collect.mp3"),
             gameover: new Audio("gameover.mp3")
         };*/
+        $("#signin-overlay").on("click", function(){
+            sounds.pistol.currentTime = 0.1
+            sounds.pistol.play()
+        })
+
 
         const totalGameTime = 60*3;   // Total game time in seconds
         let gameStartTime = 0;      // The timestamp when the game starts
