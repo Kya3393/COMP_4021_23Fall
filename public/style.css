@@ -26,7 +26,7 @@
     --button-background-hover: #f8b58b;
 }
 * {
-    cursor: url("crosshair.png"), auto;
+    cursor: url("crosshair.png") 15 15, auto;
     color: var(--font-color);
     box-sizing: border-box;
 }
