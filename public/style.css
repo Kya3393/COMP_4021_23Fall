@@ -5,7 +5,6 @@
     --field-background: white;
     --field-background-hover: #eee;
     --input-background: #eee;
-    --overlay-background: rgba(245, 158, 114, 0.8);
     --overlay-caption-color: #eb4a40;
     --overlay-content-background: linear-gradient(white, #fde0c5);
 
@@ -33,6 +32,11 @@
 body {
     font-family: "Press Start 2P", sans-serif;
     cursor: url("crosshair.png"), auto;
+    background-image: url("../Assets/background/7292022_2_01.jpg");
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: cover;
+
 }
 /* Google icon */
 .material-icons {
