@@ -14,7 +14,7 @@ app.use(express.static("public"));
 app.use(express.json());
 
 // Use the session middleware to maintain sessions
-const gameSession = session({
+const chatSession = session({
     secret: "game",
     resave: false,
     saveUninitialized: false,
@@ -23,7 +23,7 @@ const gameSession = session({
 });
 
 
-app.use(gameSession);
+app.use(chatSession);
 
 // This helper function checks whether the text only contains word characters
 function containWordCharsOnly(text) {
@@ -33,7 +33,7 @@ function containWordCharsOnly(text) {
 // Handle the /register endpoint
 app.post("/register", (req, res) => {
     // Get the JSON data from the body
-    const { username, avatar, name, password } = req.body;
+    const { username, name, password } = req.body;
 
     //
     // D. Reading the users.json file
@@ -60,7 +60,7 @@ app.post("/register", (req, res) => {
     // G. Adding the new user account
     //
     const hash = bcrypt.hashSync(password,10)
-    users[username] = {avatar, name, password:hash}
+    users[username] = { name, password:hash}
 
 
     //
@@ -91,13 +91,11 @@ app.post("/signin", (req, res) => {
     // E. Checking for username/password
     //
     var name = ''
-    var avatar = ''
     if(username in users){
         const psw = password
         const hashpsw = users[username].password
         if(bcrypt.compareSync(psw, hashpsw)){
             name = users[username].name
-            avatar = users[username].avatar
         }else{
             res.json({status: 'error', error: 'Incorrect username/password'})
             return
@@ -110,7 +108,7 @@ app.post("/signin", (req, res) => {
     //
     // G. Sending a success response with the user account
     //
-    req.session.user = {username, avatar, name}
+    req.session.user = {username,  name}
 
     res.json({status: 'success', user: req.session.user})
  
@@ -168,22 +166,22 @@ const io = new Server(httpServer)
 
 // Use the session in the Socket.IO server
 io.use((socket, next) => {
-    gameSession(socket.request, {}, next);
+    chatSession(socket.request, {}, next);
 });
 //socket.request.session.user
 
 const onlineUsers = {};
+const gameRoomList = {};
 
 
 io.on("connection", (socket) => {
     if(socket.request.session.user){
-        onlineUsers[socket.request.session.user.username] = {avatar: socket.request.session.user.avatar, name: socket.request.session.user.name}
+        onlineUsers[socket.request.session.user.username] = { name: socket.request.session.user.name}
         io.emit("add user", JSON.stringify(socket.request.session.user))
         socket.on("disconnect", ()=>{
             if(socket.request.session.user){
                 delete onlineUsers[socket.request.session.user.username]
                 io.emit("remove user", JSON.stringify(socket.request.session.user))
-                console.log(onlineUsers)
             }
         })
         socket.on("get users", ()=>{
@@ -198,7 +196,7 @@ io.on("connection", (socket) => {
         })
         socket.on("post message", (content)=>{
             const message = {
-                user: {username: socket.request.session.user.username, avatar: socket.request.session.user.avatar, name: socket.request.session.user.name},
+                user: {username: socket.request.session.user.username, name: socket.request.session.user.name},
                 datetime: new Date(),
                 content: content
             }
@@ -207,12 +205,6 @@ io.on("connection", (socket) => {
 
             fs.writeFileSync("data/chatroom.json", JSON.stringify(chatroom))
             io.emit("add message", JSON.stringify(message))
-        })
-        socket.on("broadcast add typer", ()=>{
-            socket.broadcast.emit("add typer", JSON.stringify(socket.request.session.user))
-        })
-        socket.on("broadcast delete typer", ()=>{
-            socket.broadcast.emit("remove typer", JSON.stringify(socket.request.session.user))
         })
     }
 })

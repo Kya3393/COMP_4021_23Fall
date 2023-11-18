@@ -14,51 +14,71 @@ const Socket = (function() {
         // Wait for the socket to connect successfully
         socket.on("connect", () => {
             // Get the online user list
-            socket.emit("get users");
+            // socket.emit("get users");
 
             // Get the chatroom messages
-            socket.emit("get messages");
+            // socket.emit("get messages");
+            
+            // Get the gameroom list
+            socket.emit("get gameroom list");
         });
 
-        // Set up the users event
-        socket.on("users", (onlineUsers) => {
-            onlineUsers = JSON.parse(onlineUsers);
+        socket.on("room list", (roomList) => {
+            roomList = JSON.parse(roomList)
 
-            // Show the online users
-            OnlineUsersPanel.update(onlineUsers);
-        });
+            GameMenu.update(roomList)
+        })
 
-        // Set up the add user event
-        socket.on("add user", (user) => {
-            user = JSON.parse(user);
+        socket.on("add room", (room) => {
+            room = JSON.parse(room)
 
-            // Add the online user
-            OnlineUsersPanel.addUser(user);
-        });
+            GameMenu.addRoom(room)
+        })
+        
+        socket.on("remove room", (room) => {
+            room = JSON.parse(room)
 
-        // Set up the remove user event
-        socket.on("remove user", (user) => {
-            user = JSON.parse(user);
+            GameMenu.removeRoom(room)
+        })
+        // // Set up the users event
+        // socket.on("users", (onlineUsers) => {
+        //     onlineUsers = JSON.parse(onlineUsers);
 
-            // Remove the online user
-            OnlineUsersPanel.removeUser(user);
-        });
+        //     // Show the online users
+        //     OnlineUsersPanel.update(onlineUsers);
+        // });
 
-        // Set up the messages event
-        socket.on("messages", (chatroom) => {
-            chatroom = JSON.parse(chatroom);
+        // // Set up the add user event
+        // socket.on("add user", (user) => {
+        //     user = JSON.parse(user);
 
-            // Show the chatroom messages
-            ChatPanel.update(chatroom);
-        });
+        //     // Add the online user
+        //     OnlineUsersPanel.addUser(user);
+        // });
 
-        // Set up the add message event
-        socket.on("add message", (message) => {
-            message = JSON.parse(message);
+        // // Set up the remove user event
+        // socket.on("remove user", (user) => {
+        //     user = JSON.parse(user);
 
-            // Add the message to the chatroom
-            ChatPanel.addMessage(message);
-        });
+        //     // Remove the online user
+        //     OnlineUsersPanel.removeUser(user);
+        // });
+
+        // // Set up the messages event
+        // socket.on("messages", (chatroom) => {
+        //     chatroom = JSON.parse(chatroom);
+
+        //     // Show the chatroom messages
+        //     ChatPanel.update(chatroom);
+        // });
+
+        // // Set up the add message event
+        // socket.on("add message", (message) => {
+        //     message = JSON.parse(message);
+
+        //     // Add the message to the chatroom
+        //     ChatPanel.addMessage(message);
+        // });
 
     };
 

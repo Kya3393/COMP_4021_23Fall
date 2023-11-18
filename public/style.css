@@ -19,11 +19,11 @@
     --date-color: gray;
 
 
-    --warning-color: red;
+    --warning-color: #CCFF00;
 
-    --button-color: white;
+    --button-color: #501111;
     --button-background: #a5901a;
-    --button-background-hover: #665703;
+    --button-background-hover: #534703;
 }
 * {
     cursor: url("crosshair.png") 15 15, auto;
@@ -32,9 +32,10 @@
 }
 body {
     font-family: "Press Start 2P", sans-serif;
-    background-image: url("../Assets/background/7292022_2_01.jpg");
-    background-repeat: no-repeat;
-    background-attachment: fixed;
+    background: url("Assets/background/abstract_fire_objects_bg.jpg") no-repeat center center fixed;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
     background-size: cover;
 
 }
@@ -61,14 +62,15 @@ body {
     position: fixed;
     left: 0; top: 0;
     width: 100%; height: 100%;
-    background-image: url("../Assets/background/abstract-geometric-background-shapes-texture_1194-305448.jpg");
+    background: url("Assets/background/explosion_bg.jpg") no-repeat center center fixed;
+    background-size: cover;
 }
 .overlay .caption {
     font-size: 120%;
     color: var(--overlay-caption-color);
 }
 .overlay .content {
-    background-image: url("../Assets/background/3d-render-handgun-grunge-background-with-blood-splatters_1048-7708.avif");
+    background-image: url("Assets/background/3d-render-handgun-grunge-background-with-blood-splatters_1048-7708.avif");
 }
 .warning {
     font-weight: bold;
@@ -97,10 +99,11 @@ button {
     background: var(--button-background);
     box-shadow: 2px 2px 2px rgb(0, 0, 0, 0.4);
     padding: 0 20px;
-    transition: 1s background;
+    transition: 0.3s background;
 }
 button:hover {
     background: var(--button-background-hover);
+    color: #C8CDBC;
 }
 button:active {
     margin: 2px -2px -2px 2px;
@@ -133,7 +136,7 @@ canvas, #counter, #game-start, #game-over {
     top: 0px;
     left: 0px;
 }
-canvas, #game-start, #game-over, #signin-overlay {
+canvas, #game-start, #game-over, #menu-overlay {
     border: 1px solid gray;
     width: 1000px;
     height: 1000px;
@@ -275,4 +278,11 @@ canvas {
 #edit-user-form {
     width: 270px;
     align-self: stretch;
+}
+
+#game-menu{
+    display: none;
+    position: fixed;
+    
+    width: 100%; height: 100%;
 }
