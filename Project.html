@@ -48,6 +48,7 @@
     <script src="bounding_box.js"></script>
     <script src="sprite.js"></script>
     <script src="player.js"></script>
+    <script src="bullet.js"></script>
     <script>
     $(document).ready(function() {
         /* Get the canvas and 2D context */
@@ -70,7 +71,19 @@
 
         /* Create the sprites in the game */
         const player = Player(ctx, 500, 500, gameArea); // The player
+        const bullets = [];
 
+        // Cursor pos tracking
+        let mouse_pos = { x: 0, y: 0 };
+        cv.addEventListener('mousemove', handleMouseMove);
+        function handleMouseMove(event) {
+            // Get the position of the mouse relative to the canvas
+            const rect = cv.getBoundingClientRect();
+            mouse_pos.x = event.clientX - rect.left;
+            mouse_pos.y = event.clientY - rect.top;
+            console.log('Mouse position:', mouse_pos.x, mouse_pos.y);
+        }
+        
 		
         /* The main processing of the game */
         function doFrame(now) {
@@ -92,7 +105,23 @@
 
             /* Update the sprites */
             player.update(now);
+            /* Delete out of bound bullets */
+            for( const del_bullet of bullets){
+                const bullet_pos = del_bullet.getXY();
+                if(!gameArea.isPointInBox(bullet_pos.x, bullet_pos.y)){
+                    console.log("delete bullet");
+                    bullets.splice(bullets.findIndex(bullet => bullet == del_bullet), 1);
+                }
+                
+            }
+            
 
+            /* Remove bullet */
+            // for( const del_bullet of bullets){
+            //     if(del_bullet.getAge(now) >= 3000){//testing purpose
+            //     bullets.splice(bullets.findIndex(bullet => bullet == del_bullet), 1);
+            //     }
+            // }
             /* TODO */
             /* Randomize the gem and collect the gem here */
 			/*
@@ -115,6 +144,10 @@
 
             /* Draw the sprites */
             player.draw();
+            for( const bullet of bullets){
+                bullet.draw();
+            }
+
 
             requestAnimationFrame(doFrame);
         }
@@ -125,27 +158,6 @@
 
             /* Hide the start screen */
             $("#game-start").hide();
-
-            // // Create an image element for the character parts
-            // const characterImage = new Image();
-            // // // Set the source of the image element
-            // characterImage.src = "Assets/TopDown/Assm.png";
-
-            // // Wait for the image to load
-            // characterImage.onload = function() {
-            //     // Draw the character parts on the canvas 6x6 2724*3212
-            //     s_x = 0;
-            //     s_y = 0;
-            //     s_width = 2724/6;
-            //     s_height = 3212/6;
-            //     d_x = 300;
-            //     d_y = 300;
-            //     d_width = (2724/6)*0.3;
-            //     d_height = (3212/6)*0.3;
-            //     ctx.drawImage(characterImage, s_x, s_y, s_width, s_height, d_x, d_y, d_width, d_height); // Draw the hand
-            //     //ctx.drawImage(characterImage, 50, 0, 100, 150, 0, 0, 100, 150); // Draw the body
-            //     //ctx.drawImage(characterImage, 150, 0, 50, 50, 0, 0, 50, 50); // Draw the backpack
-            // }
                 
 			/* Handle the keydown of arrow keys and spacebar */
             $(document).on("keydown", function(event) {
@@ -166,6 +178,15 @@
                 // D key
                 if (event.keyCode === 68) {
                     player.move(3); // Move right
+                }
+                // B key
+                if (event.keyCode === 66) {
+                    //const bullet = Bullet(cv, ); // The player
+                    // TEST
+                    let{x, y} = player.getXY();
+                    const test_bullet = Bullet(ctx, x, y, mouse_pos.x, mouse_pos.y);
+                    bullets.push(test_bullet);
+                    console.log("shoot");
                 }
 
                 // spacebar key ( cheat )
