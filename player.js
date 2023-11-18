@@ -43,9 +43,12 @@ const Player = function(ctx, x, y, gameArea) {
     // - `4` - moving down
     let direction = 0;
 
-    // This is the moving speed (pixels per second) of the player
+    // Player attributes !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     // default: 150
+    const id = 0;
     let speed = 150;
+    let hp = 100;
+
 
     // This function sets the player's moving direction.
     // - `dir` - the moving direction (1: Left, 2: Up, 3: Right, 4: Down)
