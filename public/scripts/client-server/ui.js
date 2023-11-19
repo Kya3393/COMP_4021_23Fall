@@ -138,7 +138,7 @@ const GameMenu = (function(){
         // Add the user one-by-one
         for (const room in roomList) {
             roomListArea.append(
-                $("<div id='room-id-" + room + "'></div>")
+                $("<div id='room-name-" + room + "'></div>")
                     .append(UI.getRoomDisplay(roomList[room]))
             );
         }
@@ -149,12 +149,12 @@ const GameMenu = (function(){
         const roomListArea = $("#room-list-panel");
 		
 		// Find the room
-		const roomDiv = roomListArea.find("#room-id-" + room.id);
+		const roomDiv = roomListArea.find("#room-name-" + room);
 		
 		// Add the room
 		if (roomDiv.length == 0) {
 			roomListArea.append(
-				$("<div id='room-id-" + room.id + "'></div>")
+				$("<div id='room-name-" + room + "'></div>")
 					.append(UI.getRoomDisplay(room))
 			);
 		}
@@ -165,7 +165,7 @@ const GameMenu = (function(){
         const roomListArea = $("#room-list-panel");
 		
 		// Find the room
-		const roomDiv = roomListArea.find("#room-id-" + room.id);
+		const roomDiv = roomListArea.find("#room-name-" + room);
 		
 		// Remove the user
 		if (roomDiv.length > 0) roomDiv.remove();
@@ -221,13 +221,31 @@ const  CreateRoom = (function() {
         
         $("#create-room-panel").hide()
 
-        $("#exit-room-button").on("click", () => {
-            //user removed from listening the socket room
-
-
+        //exit to game menu
+        $("#exit-create-room-button").on("click", () => {
             //show game menu
             UI.gameMenu();
         })
+
+        //submit create room form
+        $("#create-room-form").on("submit", (e) => {
+            // Do not submit the form
+            e.preventDefault();
+
+            // Get the input fields
+            const roomName = $("#create-room-name").val().trim();
+
+            // Send a signin request
+            const roomDiv = $("#room-list-panel").find("#room-name-" + roomName)
+
+            if(roomDiv == 0){
+                Socket.emit("create room", roomName)
+                $("#register-form").get(0).reset();
+                Socket.joinRoom(roomName)
+            }else{
+                $("#create-room-message").text("Room name is already in use!");
+            }
+        });
     };
 
     // This function shows the create room interface
@@ -245,12 +263,34 @@ const  CreateRoom = (function() {
     return { initialize, show, hide };
 })();
 
-const RoomUserPanel = (function() {
+
+const RoomPanel= (function() {
     // This function initializes the UI
-    const initialize = function() {};
+
+    const initialize = function() {
+        $("#room-panel").hide()
+
+        $("#exit-room-button").on("click", () => {
+            if($("#room-title").text() != ""){
+                Socket.leaveRoom($("#room-title").text())
+            }
+        })
+
+        $("#ready-check").on("click", () => {
+            
+            if($("#ready-check").text() == "ready"){
+                $("#ready-check").text("cancel")
+            }else{
+                $("#ready-check").text("ready")
+            }
+        })
+    };
 
     // This function updates the online users panel
-    const update = function(Users) {
+    const update = function(Users, roomName) {
+
+        const RoomTitle = $("#room-title")
+
         const RoomUserList = $("#room-user-list");
 
         // Clear the online users area
@@ -263,43 +303,42 @@ const RoomUserPanel = (function() {
                     .append(UI.getUserDisplay(onlineUsers[username]))
             );
         }
+
+        if (roomName) {
+            RoomTitle.text(roomName)
+        }
+        else {
+            RoomTitle.text("");
+        }
     };
 
     // This function adds a user in the panel
-	const addUser = function(user) {
+    const addUser = function(user) {
         const RoomUserList = $("#room-user-list");
-		
-		// Find the user
-		const userDiv = RoomUserList.find("#username-" + user.username);
-		
-		// Add the user
-		if (userDiv.length == 0) {
-			RoomUserList.append(
-				$("<div id='username-" + user.username + "'></div>")
-					.append(UI.getUserDisplay(user))
-			);
-		}
-	};
+        
+        // Find the user
+        const userDiv = RoomUserList.find("#username-" + user.name);
+        
+        // Add the user
+        if (userDiv.length == 0) {
+            RoomUserList.append(
+                $("<div id='username-" + user.name + "'></div>")
+                    .append(UI.getUserDisplay(user))
+            );
+        }
+    };
 
     // This function removes a user from the panel
-	const removeUser = function(user) {
+    const removeUser = function(user) {
         const RoomUserList = $("#room-user-list");
-		
-		// Find the user
-		const userDiv = RoomUserList.find("#username-" + user.username);
-		
-		// Remove the user
-		if (userDiv.length > 0) userDiv.remove();
-	};
-
-    return { initialize, update, addUser, removeUser };
-})();
-
-const RoomPanel= (function() {
-    // This function initializes the UI
-    const initialize = function() {
-        $("#room-panel").hide()
+        
+        // Find the user
+        const userDiv = RoomUserList.find("#username-" + user.name);
+        
+        // Remove the user
+        if (userDiv.length > 0) userDiv.remove();
     };
+    
 
     // This function shows the create room interface
     const show = function() {
@@ -312,8 +351,7 @@ const RoomPanel= (function() {
     };
 
 
-
-    return { initialize, show, hide };
+    return { initialize, show, hide, update, addUser, removeUser };
 })();
 
 const UI = (function() {
@@ -325,7 +363,7 @@ const UI = (function() {
 
     const getRoomDisplay = function(room){
         return $("<div class='field-content row shadow'></div>")
-            .append($("<span class='room-id'>" + room.id + "</span>"));
+            .append($("<span class='room-name'>" + room + "</span>"));
     }
 
     // The components of the UI are put here, but only under the menu overlay: not including the game session
@@ -377,8 +415,11 @@ const UI = (function() {
         CreateRoom.show()
         console.log("displaying create room panel")
     }
-{
 
-}
+    const roomPanel = function(room){
+
+    }
+
+
     return { getUserDisplay, getRoomDisplay, initialize , startingScreen, frontPage,  gameMenu, createRoom};
 })();

@@ -1,6 +1,7 @@
 const Socket = (function() {
     // This stores the current Socket.IO socket
     let socket = null;
+    let socket_room = null;
 
     // This function gets the socket from the module
     const getSocket = function() {
@@ -40,21 +41,22 @@ const Socket = (function() {
 
             GameMenu.removeRoom(room)
         })
-        // Set up the users event
-        socket.on("users", (onlineUsers) => {
-            onlineUsers = JSON.parse(onlineUsers);
 
-            // Show the online users
-            OnlineUsersPanel.update(onlineUsers);
-        });
+        // // Set up the users event
+        // socket.on("users", (onlineUsers) => {
+        //     onlineUsers = JSON.parse(onlineUsers);
 
-        // Set up the add user event
-        socket.on("add user", (user) => {
-            user = JSON.parse(user);
+        //     // Show the online users
+        //     OnlineUsersPanel.update(onlineUsers);
+        // });
 
-            // Add the online user
-            OnlineUsersPanel.addUser(user);
-        });
+        // // Set up the add user event
+        // socket.on("add user", (user) => {
+        //     user = JSON.parse(user);
+
+        //     // Add the online user
+        //     OnlineUsersPanel.addUser(user);
+        // });
 
         // // Set up the remove user event
         // socket.on("remove user", (user) => {
@@ -86,27 +88,64 @@ const Socket = (function() {
     const disconnect = function() {
         socket.disconnect();
         socket = null;
+        socket_room = null
     };
 
     // This function sends a post message event to the server
-    const postMessage = function(content) {
-        if (socket && socket.connected) {
-            socket.emit("post message", content);
-        }
-    };
+    // const postMessage = function(content) {
+    //     if (socket && socket.connected) {
+    //         socket.emit("post message", content);
+    //     }
+    // };
 
     const joinRoom = function(room){
         if(socket && socket.connected) {
             socket.emit("join room", room)
+
+            socket.on("user in room", (users) => {
+                users = JSON.parse(users)
+    
+                RoomPanel.update(users)
+            })
+    
+            socket.on("add user in room", (users) => {
+                users = JSON.parse(users)
+    
+                RoomPanel.update(users)
+            })
+
+            socket.on("remove user in room", (users) => {
+                users = JSON.parse(users)
+    
+                RoomPanel.update(users)
+            })
         }
     }
 
     const leaveRoom = function(room){
         if(socket && socket.connected) {
             socket.emit("leave room", room)
+
+            socket.removeListener("user in room", (users) => {
+                users = JSON.parse(users)
+    
+                RoomPanel.update(users)
+            })
+    
+            socket.removeListener("add user in room", (users) => {
+                users = JSON.parse(users)
+    
+                RoomPanel.update(users)
+            })
+
+            socket.removeListener("remove user in room", (users) => {
+                users = JSON.parse(users)
+    
+                RoomPanel.update(users)
+            })
         }
     }
 
 
-    return { getSocket, connect, disconnect, postMessage, joinRoom, leaveRoom};
+    return { getSocket, connect, disconnect, joinRoom, leaveRoom};
 })();

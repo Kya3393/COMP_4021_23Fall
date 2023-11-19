@@ -187,29 +187,58 @@ io.on("connection", (socket) => {
         socket.on("get users", ()=>{
             socket.emit("users",JSON.stringify(onlineUsers))
         })
-        socket.on("get messages", ()=>{
-            // const chatroom = JSON.parse(fs.readFileSync("data/chatroom.json"))
-            // const messages = JSON.stringify(chatroom)
-            const messages = fs.readFileSync("data/chatroom.json", "utf-8")
+        // socket.on("get messages", ()=>{
+        //     // const chatroom = JSON.parse(fs.readFileSync("data/chatroom.json"))
+        //     // const messages = JSON.stringify(chatroom)
+        //     const messages = fs.readFileSync("data/chatroom.json", "utf-8")
     
-            socket.emit("messages", messages)
-        })
-        socket.on("post message", (content)=>{
-            const message = {
-                user: {username: socket.request.session.user.username, name: socket.request.session.user.name},
-                datetime: new Date(),
-                content: content
-            }
-            const chatroom = JSON.parse(fs.readFileSync("data/chatroom.json"))
-            chatroom.push(message)
-
-            fs.writeFileSync("data/chatroom.json", JSON.stringify(chatroom))
-            io.emit("add message", JSON.stringify(message))
-        })
-        // socket.on("create room", (roomName) => {
-        //     gameRoomList[Object.keys(gameRoomList).length.toString()] = {name: roomName, users: {}}
-        //     io.emit("add room", JSON.stringify())
+        //     socket.emit("messages", messages)
         // })
+        // socket.on("post message", (content)=>{
+        //     const message = {
+        //         user: {username: socket.request.session.user.username, name: socket.request.session.user.name},
+        //         datetime: new Date(),
+        //         content: content
+        //     }
+        //     const chatroom = JSON.parse(fs.readFileSync("data/chatroom.json"))
+        //     chatroom.push(message)
+
+        //     fs.writeFileSync("data/chatroom.json", JSON.stringify(chatroom))
+        //     io.emit("add message", JSON.stringify(message))
+        // })
+        socket.on("get room list", () => {
+            socket.emit("room list", JSON.stringify(gameRoomList))
+        })
+
+        socket.on("create room", (roomName) => {
+            gameRoomList[roomName] = {users: {}}
+            socket.broadcast.emit("add room", JSON.stringify(gameRoomList[roomName]))
+        })
+
+        socket.on("join room", (roomName) => {
+            if(roomName in gameRoomList){
+                socket.join(roomName)
+                gameRoomList.roomName[socket.request.session.user] = {name: socket.request.session.user.name}
+                socket.broadcast.emit("add user in room", JSON.stringify(socket.request.session.user))
+            }else{
+                console.log("room does not exist")
+            }
+        })
+
+
+        socket.on("leave room", (roomName) => {
+            if(socket.request.session.user in gameRoomList[roomName]){
+                socket.leave(roomName)
+                socket.broadcast.emit("remove user in room", JSON.stringify(socket.request.session.user))
+                delete gameRoomList.roomName[socket.request.session.user]
+                if(Object.keys(gameRoomList[roomName]).length == 0){
+                    socket.broadcast.emit("remove room", JSON.stringify(gameRoomList[roomName]))
+                    delete gameRoomList[roomName]
+                }
+            }else{
+                console.log("user not in any room")
+            }
+        })
     }
 })
 
