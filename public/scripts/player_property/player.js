@@ -30,10 +30,10 @@ const Player = function(ctx, x, y, gameArea) {
     const sprite = Sprite(ctx, x, y);
 
     // The sprite object is configured for the player sprite here.
-    sprite.setSequence(sequences.bruh)
-          .setScale(0.1)
+    sprite.setSequence(sequences.idleDown)
+          .setScale(2)
           .setShadowScale({ x: 0.75, y: 0.20 })
-          .useSheet("./Assets/TopDown/P1_walk.png");
+          .useSheet("./Assets/TopDown/lab4.png");
 
     // This is the moving direction, which can be a number from 0 to 4:
     // - `0` - not moving
@@ -43,19 +43,22 @@ const Player = function(ctx, x, y, gameArea) {
     // - `4` - moving down
     let direction = 0;
 
-    // This is the moving speed (pixels per second) of the player
+    // Player attributes !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     // default: 150
+    const id = 0;
     let speed = 150;
+    let hp = 100;
+
 
     // This function sets the player's moving direction.
     // - `dir` - the moving direction (1: Left, 2: Up, 3: Right, 4: Down)
     const move = function(dir) {
         if (dir >= 1 && dir <= 4 && dir != direction) {
             switch (dir) {
-                case 1: sprite.setSequence(sequences.bruh); break;
-                case 2: sprite.setSequence(sequences.bruh); break;
-                case 3: sprite.setSequence(sequences.bruh); break;
-                case 4: sprite.setSequence(sequences.bruh); break;
+                case 1: sprite.setSequence(sequences.moveLeft); break;
+                case 2: sprite.setSequence(sequences.moveUp); break;
+                case 3: sprite.setSequence(sequences.moveRight); break;
+                case 4: sprite.setSequence(sequences.moveDown); break;
             }
             direction = dir;
         }
@@ -66,10 +69,10 @@ const Player = function(ctx, x, y, gameArea) {
     const stop = function(dir) {
         if (direction == dir) {
             switch (dir) {
-                case 1: sprite.setSequence(sequences.bruh); break;
-                case 2: sprite.setSequence(sequences.bruh); break;
-                case 3: sprite.setSequence(sequences.bruh); break;
-                case 4: sprite.setSequence(sequences.bruh); break;
+                case 1: sprite.setSequence(sequences.idleLeft); break;
+                case 2: sprite.setSequence(sequences.idleUp); break;
+                case 3: sprite.setSequence(sequences.idleRight); break;
+                case 4: sprite.setSequence(sequences.idleDown); break;
             }
             direction = 0;
         }
@@ -109,6 +112,19 @@ const Player = function(ctx, x, y, gameArea) {
         sprite.update(time);
     };
 
+    // Shoot Bullets //
+    const shoot = function(target_x, target_y) {
+
+        /* Save the settings */
+        ctx.save();
+
+        ctx.fillRect(target_x, target_y, 50, 50);
+
+        /* Restore saved settings */
+        ctx.restore();
+    }
+
+
     // The methods are returned as an object here.
     return {
         move: move,
@@ -117,6 +133,9 @@ const Player = function(ctx, x, y, gameArea) {
         slowDown: slowDown,
         getBoundingBox: sprite.getBoundingBox,
         draw: sprite.draw,
-        update: update
+        update: update,
+        shoot: shoot,
+        getXY: sprite.getXY
+
     };
 };
