@@ -40,21 +40,21 @@ const Socket = (function() {
 
             GameMenu.removeRoom(room)
         })
-        // // Set up the users event
-        // socket.on("users", (onlineUsers) => {
-        //     onlineUsers = JSON.parse(onlineUsers);
+        // Set up the users event
+        socket.on("users", (onlineUsers) => {
+            onlineUsers = JSON.parse(onlineUsers);
 
-        //     // Show the online users
-        //     OnlineUsersPanel.update(onlineUsers);
-        // });
+            // Show the online users
+            OnlineUsersPanel.update(onlineUsers);
+        });
 
-        // // Set up the add user event
-        // socket.on("add user", (user) => {
-        //     user = JSON.parse(user);
+        // Set up the add user event
+        socket.on("add user", (user) => {
+            user = JSON.parse(user);
 
-        //     // Add the online user
-        //     OnlineUsersPanel.addUser(user);
-        // });
+            // Add the online user
+            OnlineUsersPanel.addUser(user);
+        });
 
         // // Set up the remove user event
         // socket.on("remove user", (user) => {
@@ -95,6 +95,18 @@ const Socket = (function() {
         }
     };
 
+    const joinRoom = function(room){
+        if(socket && socket.connected) {
+            socket.emit("join room", room)
+        }
+    }
 
-    return { getSocket, connect, disconnect, postMessage};
+    const leaveRoom = function(room){
+        if(socket && socket.connected) {
+            socket.emit("leave room", room)
+        }
+    }
+
+
+    return { getSocket, connect, disconnect, postMessage, joinRoom, leaveRoom};
 })();

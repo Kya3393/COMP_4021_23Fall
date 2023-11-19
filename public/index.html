@@ -25,7 +25,7 @@
                 <text x="50%" y="60%">Click here to start the game</text>
             </svg>
             <div id="menu-overlay" class="overlay row" >
-                <div class="content shadow row">
+                <div id="front-page" class="content shadow row">
                     <form id="signin-form" class="col">
                         <div class="caption">SIGN IN</div>
                         <div class="spacer-0"></div>
@@ -52,16 +52,48 @@
                     </form>
                 </div>
                 <div id="game-menu" class="row" >
-                    <div class="spacer-grow"></div>
-    
-                    <div id="user-panel" class="row">
-                        <div class="field-content row shadow">
-                            <span class="user-name">-</span>
+                    <div id="main-menu-panel">
+                        <div id="menu-header" class="row">
+                            <div id="menu-title">Game Room List
+                            </div>
+                
+                            <div class="spacer-grow"></div>
+                
+                            <div id="user-panel" class="row">
+                                <div class="field-content row shadow">
+                                    <span class="user-name">-</span>
+                                </div>
+                                <button id="signout-button" class="icon"><span class="material-icons">logout</span></button>
+                            </div>
                         </div>
-                        <button id="signout-button" class="icon"><span class="material-icons">logout</span></button>
+                        <div id="room-list-panel" class="col"></div>
+                        <button id="new-room" class="icon">
+                            New Room
+                        </button>
                     </div>
-                    <div id="game-room-panel" class="col">
+                    <div id="create-room-panel">
+                        <div id="menu-header" class="row">
+                            <div id="menu-title">Create Room
+                            </div>
+                
+                            <div class="spacer-grow"></div>
+                
+                            <button id="exit-room-button" class="icon"><span class="material-icons">exit_to_app</span></button>
+                        </div>
+                        <form id="create-room-form" class="col">
+                            <input id="create-room-name" placeholder="Enter room name" autocomplete="off"></input>
+                            <div class="spacer-0"></div>
+                            <button type="submit">Create</button>
+                            <div id="signin-message" class="warning center"></div>
+                            <div class="spacer-grow"></div>
+                        </form>
+
                     </div>
+                    <div id="room-panel">
+                        <div id="room-user-list" class="col">
+                        </div>
+                    </div>
+                    
                 </div>
             </div>
             <svg xmlns="http://www.w3.org/2000/svg" id="game-over" style="display: none">
@@ -98,18 +130,15 @@
 
         Authentication.validate(
             () => {
-                startingScreen.hide()
-                SignInForm.hide();
-                GameMenu.show();
-                UserPanel.update(Authentication.getUser());
-                UserPanel.show();
+                console.log("signed in")
+                
+                UI.gameMenu()
 
                 Socket.connect();
             },
             () => { 
-                startingScreen.hide();
-                SignInForm.show();
-                    }
+                UI.startingScreen()
+            }
         );
 
         /* Get the canvas and 2D context */

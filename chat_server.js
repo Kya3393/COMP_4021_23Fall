@@ -206,6 +206,10 @@ io.on("connection", (socket) => {
             fs.writeFileSync("data/chatroom.json", JSON.stringify(chatroom))
             io.emit("add message", JSON.stringify(message))
         })
+        // socket.on("create room", (roomName) => {
+        //     gameRoomList[Object.keys(gameRoomList).length.toString()] = {name: roomName, users: {}}
+        //     io.emit("add room", JSON.stringify())
+        // })
     }
 })
 

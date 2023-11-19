@@ -8,10 +8,12 @@
     --overlay-caption-color: rgb(177, 111, 11);
     --overlay-content-background: linear-gradient(#d48236, #6d4628);
 
+    --game-menu-background: url("Assets/background/3d-render-handgun-grunge-background-with-blood-splatters_1048-7708.avif") no-repeat center center fixed;
     --header-background: linear-gradient(to right, #eb4a40, #f59e72);
     --online-users-panel-background: linear-gradient(to right, #c9b9ab, #facba6);
     --chat-panel-background: none;
 
+    --menu-title-color: #CCFF00;
     --title-color: white;
     --caption-color: white;
 
@@ -209,6 +211,9 @@ canvas {
 #user-panel {
     padding: 0;
 }
+#room-panel {
+    padding: 0;
+}
 #signin-user {
     cursor: pointer;
 }
@@ -280,9 +285,36 @@ canvas {
     align-self: stretch;
 }
 
+#menu-title{
+    color: var(--menu-title-color);
+}
+
 #game-menu{
     display: none;
     position: fixed;
-    
-    width: 100%; height: 100%;
+    background: var(--game-menu-background);
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+    width: 80%; height: 80%;
+}
+
+#new-room{
+    position:absolute;
+    bottom: 0;
+    right: 0;
+    font-weight: bold;
+    height: 40px;
+    border: 1px solid black;
+    color: var(--button-color);
+    background: var(--button-background);
+    box-shadow: 2px 2px 2px rgb(0, 0, 0, 0.4);
+    padding: 0 20px;
+    margin: 0 20px;
+    transition: 0.3s background;
+}
+#new-room:hover{
+    background: var(--button-background-hover);
+    color: #C8CDBC;
 }
