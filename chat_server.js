@@ -206,20 +206,27 @@ io.on("connection", (socket) => {
         //     fs.writeFileSync("data/chatroom.json", JSON.stringify(chatroom))
         //     io.emit("add message", JSON.stringify(message))
         // })
-        socket.on("get room list", () => {
+        socket.on("get gameroom list", () => {
             socket.emit("room list", JSON.stringify(gameRoomList))
         })
 
         socket.on("create room", (roomName) => {
-            gameRoomList[roomName] = {users: {}}
+            gameRoomList[roomName] = {}
             socket.broadcast.emit("add room", JSON.stringify(gameRoomList[roomName]))
         })
 
-        socket.on("join room", (roomName) => {
+        socket.on("join room", (roomName) => {  
+
             if(roomName in gameRoomList){
+                //listen to roomName channel
                 socket.join(roomName)
-                gameRoomList.roomName[socket.request.session.user] = {name: socket.request.session.user.name}
-                socket.broadcast.emit("add user in room", JSON.stringify(socket.request.session.user))
+
+                const  username = socket.request.session.user.username
+
+                gameRoomList[roomName][username]  = socket.request.session.user.name
+                
+                socket.emit("room info", {name: JSON.stringify(roomName), users: JSON.stringify(gameRoomList[roomName])})
+                socket.broadcast.to(roomName).emit("add user in room", JSON.stringify(socket.request.session.user))
             }else{
                 console.log("room does not exist")
             }
@@ -228,13 +235,21 @@ io.on("connection", (socket) => {
 
         socket.on("leave room", (roomName) => {
             if(socket.request.session.user in gameRoomList[roomName]){
+                //stop listening
                 socket.leave(roomName)
+
+                //tell other user in room u r gone
                 socket.to(roomName).emit("remove user in room", JSON.stringify(socket.request.session.user))
-                delete gameRoomList.roomName[socket.request.session.user]
+
+                //delete user name in room list
+                delete gameRoomList[roomName][socket.request.session.user]
+
+                //check if need to delete room (0ppl in room)
                 if(Object.keys(gameRoomList[roomName]).length == 0){
                     socket.broadcast.emit("remove room", JSON.stringify(gameRoomList[roomName]))
                     delete gameRoomList[roomName]
                 }else{
+                    //change host
                     socket.to(roomName).emit("update host")
                 }
             }else{

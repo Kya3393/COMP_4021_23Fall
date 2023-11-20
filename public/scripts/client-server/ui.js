@@ -1,3 +1,8 @@
+// This helper function checks whether the text only contains word characters
+function containWordCharsOnly(text) {
+    return /^\w+$/.test(text);
+}
+
 const SignInForm = (function() {
     // This function initializes the UI
     const initialize = function() {
@@ -19,7 +24,7 @@ const SignInForm = (function() {
                 () => {
                     hide()
                     $("#front-page").hide()
-                    GameMenu.show()
+                    MainMenu.show()
                     UserPanel.update(Authentication.getUser());
                     UserPanel.show();
 
@@ -116,7 +121,7 @@ const UserPanel = (function() {
     return { initialize, show, hide, update };
 })();
 
-const GameMenu = (function(){
+const MainMenu = (function(){
     // initialize
     const initialize = function(){
         $("#main-menu-panel").hide()
@@ -174,9 +179,8 @@ const GameMenu = (function(){
     // This function shows the form with the user
     const show = function() {
         $("#menu-overlay").show()
-        $("#game-menu").show();
         $("#main-menu-panel").show();
-
+        $("#game-menu").show()
     };
 
     // This function hides the form
@@ -224,7 +228,7 @@ const  CreateRoom = (function() {
         //exit to game menu
         $("#exit-create-room-button").on("click", () => {
             //show game menu
-            UI.gameMenu();
+            UI.mainMenu();
         })
 
         //submit create room form
@@ -237,13 +241,16 @@ const  CreateRoom = (function() {
 
             // Send a signin request
             const roomDiv = $("#room-list-panel").find("#room-name-" + roomName)
-
-            if(roomDiv == 0){
-                Socket.emit("create room", roomName)
-                $("#register-form").get(0).reset();
-                Socket.joinRoom(roomName)
+            if(containWordCharsOnly(roomName)){
+                if(roomDiv.length == 0){
+                    $("#register-form").get(0).reset();
+                    Socket.createRoom(roomName)
+                    Socket.joinRoom(roomName)
+                }else{
+                    $("#create-form-message").text("Room name is already in use!");
+                }
             }else{
-                $("#create-room-message").text("Room name is already in use!");
+                $("#create-form-message").text("Invalid room name!");
             }
         });
     };
@@ -293,7 +300,7 @@ const RoomPanel= (function() {
     };
 
     // This function updates the online users panel
-    const update = function(Users, roomName) {
+    const update = function(roomName, Users) {
 
         const RoomTitle = $("#room-title")
 
@@ -306,7 +313,7 @@ const RoomPanel= (function() {
         for (const username in Users) {
             RoomUserList.append(
                 $("<div id='username-" + username + "'></div>")
-                    .append(UI.getUserDisplay(onlineUsers[username]))
+                    .append(UI.getUserDisplay(Users[username]))
             );
         }
 
@@ -349,11 +356,13 @@ const RoomPanel= (function() {
     // This function shows the create room interface
     const show = function() {
         $("#room-panel").show()
+        $("#game-menu").show()
     };
 
     // This function hides the create room interface
     const hide = function() {
         $("#room-panel").hide()
+        $("#game-menu").hide()
     };
 
 
@@ -370,11 +379,12 @@ const UI = (function() {
     const getRoomDisplay = function(room){
         return $("<div class='field-content row shadow'></div>")
             .append($("<span class='room-name'>" + room + "</span>"))
+            .append($("<button>Join</button"))
 
     }
 
     // The components of the UI are put here, but only under the menu overlay: not including the game session
-    const components = [SignInForm, UserPanel, GameMenu, StartingScreen, CreateRoom, RoomPanel ];
+    const components = [SignInForm, UserPanel, MainMenu, StartingScreen, CreateRoom, RoomPanel ];
 
     // This function initializes the UI
     const initialize = function() {
@@ -403,14 +413,14 @@ const UI = (function() {
     }
 
     // This function switches the UI to game menu with list of game room
-    const gameMenu = function(){
+    const mainMenu = function(){
         for (const component of components) {
             component.hide();
         }
-        GameMenu.show()
+        MainMenu.show()
         UserPanel.update(Authentication.getUser());
         UserPanel.show();
-        console.log("displaying game menu")
+        console.log("displaying main menu")
     }
 
     // This function switches the UI to the create room interface
@@ -424,9 +434,14 @@ const UI = (function() {
     }
 
     const roomPanel = function(room){
+        for (const component of components) {
+            component.hide();
+        }
 
+        RoomPanel.show(room)
+        console.log("displaying room panel")
     }
 
 
-    return { getUserDisplay, getRoomDisplay, initialize , startingScreen, frontPage,  gameMenu, createRoom};
+    return { getUserDisplay, getRoomDisplay, initialize , startingScreen, frontPage,  mainMenu, createRoom, roomPanel};
 })();

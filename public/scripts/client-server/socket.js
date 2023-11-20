@@ -27,19 +27,28 @@ const Socket = (function() {
         socket.on("room list", (roomList) => {
             roomList = JSON.parse(roomList)
 
-            GameMenu.update(roomList)
+            MainMenu.update(roomList)
         })
 
         socket.on("add room", (room) => {
             room = JSON.parse(room)
 
-            GameMenu.addRoom(room)
+            MainMenu.addRoom(room)
         })
         
         socket.on("remove room", (room) => {
             room = JSON.parse(room)
 
-            GameMenu.removeRoom(room)
+            MainMenu.removeRoom(room)
+        })
+
+        socket.on("room info", ({name, users}) =>{
+
+
+            name = JSON.parse(name)
+            users = JSON.parse(users)
+
+            RoomPanel.update(name, users)
         })
 
         // // Set up the users event
@@ -98,9 +107,16 @@ const Socket = (function() {
     //     }
     // };
 
+    const createRoom  = function(room){
+        if(socket && socket.connected){
+            socket.emit("create room", room)
+        }
+    }
+
     const joinRoom = function(room){
         if(socket && socket.connected) {
-            socket.emit("join room", JSON.stringify(room))
+            socket.emit("join room", room)
+            UI.roomPanel(room)
 
             socket.on("user in room", (users) => {
                 users = JSON.parse(users)
@@ -147,5 +163,5 @@ const Socket = (function() {
     }
 
 
-    return { getSocket, connect, disconnect, joinRoom, leaveRoom};
+    return { getSocket, connect, disconnect, joinRoom, leaveRoom, createRoom};
 })();
