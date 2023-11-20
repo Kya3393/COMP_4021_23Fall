@@ -140,12 +140,14 @@ const MainMenu = (function(){
         // Clear the game room area
         roomListArea.empty();
 
+
         // Add the user one-by-one
         for (const room in roomList) {
             roomListArea.append(
-                $("<div id='room-name-" + room + "'></div>")
-                    .append(UI.getRoomDisplay(roomList[room]))
+                $("<div id='room-name-" + room + "' style='width: 80%;'></div>")
+                    .append(UI.getRoomDisplay(room))
             );
+            $()
         }
     };
 
@@ -299,31 +301,36 @@ const RoomPanel= (function() {
         })
     };
 
-    // This function updates the online users panel
-    const update = function(roomName, Users) {
+    // This function updates the room name
+    const updateRoomName = function(roomName) {
 
         const RoomTitle = $("#room-title")
 
-        const RoomUserList = $("#room-user-list");
 
-        // Clear the online users area
-        RoomUserList.empty();
-
-        // Add the user one-by-one
-        for (const username in Users) {
-            RoomUserList.append(
-                $("<div id='username-" + username + "'></div>")
-                    .append(UI.getUserDisplay(Users[username]))
-            );
-        }
-
-        if (roomName) {
+        if (roomName == "") {
             RoomTitle.text(roomName)
         }
         else {
             RoomTitle.text("");
         }
     };
+
+    const updateRoomUsers = function(Users){
+        const RoomUserList = $("#room-user-list");
+
+        // Clear the online users area
+        RoomUserList.empty();
+
+        console.log(Users)
+
+        // Add the user one-by-one
+        for (const username in Users) {
+            RoomUserList.append(
+                $("<div id='username-" + username + "' style='width: 100%;'></div>")
+                    .append(UI.getUserDisplay(Users[username]))
+            );
+        }
+    }
 
     // This function adds a user in the panel
     const addUser = function(user) {
@@ -366,20 +373,19 @@ const RoomPanel= (function() {
     };
 
 
-    return { initialize, show, hide, update, addUser, removeUser };
+    return { initialize, show, hide, updateRoomName, updateRoomUsers, addUser, removeUser };
 })();
 
 const UI = (function() {
     // This function gets the user display
-    const getUserDisplay = function(user) {
+    const getUserDisplay = function(username) {
         return $("<div class='field-content row shadow'></div>")
-            .append($("<span class='user-name'>" + user.name + "</span>"));
+            .append($("<span class='user-name'> Player Name: " + username + "</span>" + "<div class='spacer-grow'></div>" + "<span class='ready-status'><span class='material-icons'>exit_to_app</span>"))
     };
 
     const getRoomDisplay = function(room){
         return $("<div class='field-content row shadow'></div>")
-            .append($("<span class='room-name'>" + room + "</span>"))
-            .append($("<button>Join</button"))
+            .append($("<span class='room-name'>" + room + "</span>" + "<div class='spacer-grow'></div>" + "<button id='button-id-"+ room + "' class='join-room-button'><span class='join-room-text'>Join</span></button"))
 
     }
 

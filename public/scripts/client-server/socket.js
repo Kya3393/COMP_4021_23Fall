@@ -48,9 +48,13 @@ const Socket = (function() {
             name = JSON.parse(name)
             users = JSON.parse(users)
 
-            RoomPanel.update(name, users)
+            RoomPanel.updateRoomName(name)
+            RoomPanel.updateRoomUsers(users)
         })
 
+        socket.on("leave room", () => {
+            UI.mainMenu()
+        })
         // // Set up the users event
         // socket.on("users", (onlineUsers) => {
         //     onlineUsers = JSON.parse(onlineUsers);
@@ -117,11 +121,12 @@ const Socket = (function() {
         if(socket && socket.connected) {
             socket.emit("join room", room)
             UI.roomPanel(room)
+            socket_room = room
 
             socket.on("user in room", (users) => {
                 users = JSON.parse(users)
     
-                RoomPanel.update(users)
+                RoomPanel.updateRoomUsers(users)
             })
     
             socket.on("add user in room", (users) => {
@@ -140,12 +145,13 @@ const Socket = (function() {
 
     const leaveRoom = function(room){
         if(socket && socket.connected) {
-            socket.emit("leave room", JSON.stringify(room))
+            socket.emit("leave room", room)
+            socket_room = null
 
             socket.removeListener("user in room", (users) => {
                 users = JSON.parse(users)
     
-                RoomPanel.update(users)
+                RoomPanel.updateRoomUsers(users)
             })
     
             socket.removeListener("add user in room", (users) => {
@@ -162,6 +168,13 @@ const Socket = (function() {
         }
     }
 
+    const inRoom = function(){
+        console.log(socket_room)
+        if(socket_room  !==  null){
+            return  true
+        }else return false
+    }
 
-    return { getSocket, connect, disconnect, joinRoom, leaveRoom, createRoom};
+
+    return { getSocket, connect, disconnect, joinRoom, leaveRoom, createRoom, inRoom};
 })();

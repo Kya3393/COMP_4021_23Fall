@@ -140,7 +140,9 @@
         Authentication.validate(
             () => {
                 console.log("signed in")
-                
+                if(Socket.inRoom()){
+                    UI.roomPanel()
+                }
                 UI.mainMenu()
 
                 Socket.connect();

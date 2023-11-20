@@ -1,5 +1,6 @@
 const Authentication = (function() {
     // This stores the current signed-in user
+    //{username, name}
     let user = null;
 
     // This function gets the signed-in user

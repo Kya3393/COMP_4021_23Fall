@@ -318,3 +318,7 @@ canvas {
     background: var(--button-background-hover);
     color: #C8CDBC;
 }
+
+.join-room-text{
+    color: var(--button-color);
+}
