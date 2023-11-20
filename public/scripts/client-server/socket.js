@@ -100,7 +100,7 @@ const Socket = (function() {
 
     const joinRoom = function(room){
         if(socket && socket.connected) {
-            socket.emit("join room", room)
+            socket.emit("join room", JSON.stringify(room))
 
             socket.on("user in room", (users) => {
                 users = JSON.parse(users)
@@ -111,20 +111,20 @@ const Socket = (function() {
             socket.on("add user in room", (users) => {
                 users = JSON.parse(users)
     
-                RoomPanel.update(users)
+                RoomPanel.addUser(users)
             })
 
             socket.on("remove user in room", (users) => {
                 users = JSON.parse(users)
     
-                RoomPanel.update(users)
+                RoomPanel.removeUser(users)
             })
         }
     }
 
     const leaveRoom = function(room){
         if(socket && socket.connected) {
-            socket.emit("leave room", room)
+            socket.emit("leave room", JSON.stringify(room))
 
             socket.removeListener("user in room", (users) => {
                 users = JSON.parse(users)
@@ -135,13 +135,13 @@ const Socket = (function() {
             socket.removeListener("add user in room", (users) => {
                 users = JSON.parse(users)
     
-                RoomPanel.update(users)
+                RoomPanel.addUser(users)
             })
 
             socket.removeListener("remove user in room", (users) => {
                 users = JSON.parse(users)
     
-                RoomPanel.update(users)
+                RoomPanel.removeUser(users)
             })
         }
     }

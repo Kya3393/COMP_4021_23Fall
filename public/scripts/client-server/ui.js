@@ -273,7 +273,13 @@ const RoomPanel= (function() {
         $("#exit-room-button").on("click", () => {
             if($("#room-title").text() != ""){
                 Socket.leaveRoom($("#room-title").text())
+                console.log("room left successfully!")
+            }else{
+                console.log("error on leaving room")
             }
+
+            $("#room-user-list").empty()
+            $("#ready-check").text("ready")
         })
 
         $("#ready-check").on("click", () => {
@@ -363,7 +369,8 @@ const UI = (function() {
 
     const getRoomDisplay = function(room){
         return $("<div class='field-content row shadow'></div>")
-            .append($("<span class='room-name'>" + room + "</span>"));
+            .append($("<span class='room-name'>" + room + "</span>"))
+
     }
 
     // The components of the UI are put here, but only under the menu overlay: not including the game session

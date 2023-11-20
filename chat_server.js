@@ -229,11 +229,13 @@ io.on("connection", (socket) => {
         socket.on("leave room", (roomName) => {
             if(socket.request.session.user in gameRoomList[roomName]){
                 socket.leave(roomName)
-                socket.broadcast.emit("remove user in room", JSON.stringify(socket.request.session.user))
+                socket.to(roomName).emit("remove user in room", JSON.stringify(socket.request.session.user))
                 delete gameRoomList.roomName[socket.request.session.user]
                 if(Object.keys(gameRoomList[roomName]).length == 0){
                     socket.broadcast.emit("remove room", JSON.stringify(gameRoomList[roomName]))
                     delete gameRoomList[roomName]
+                }else{
+                    socket.to(roomName).emit("update host")
                 }
             }else{
                 console.log("user not in any room")
