@@ -144,26 +144,37 @@ const MainMenu = (function(){
         // Add the user one-by-one
         for (const room in roomList) {
             roomListArea.append(
-                $("<div id='room-name-" + room + "' style='width: 80%;'></div>")
+                $("<div id='room-name-" + room + "' style='width: 100%;'></div>")
                     .append(UI.getRoomDisplay(room))
             );
-            $()
+
+            $("#room-name-" + room).on("click", () => {
+                console.log("join room btn clicked")
+                Socket.joinRoom(room)
+            })
         }
+        
     };
 
     // This function adds a user in the panel
 	const addRoom = function(room) {
         const roomListArea = $("#room-list-panel");
 		
+        console.log(room)
 		// Find the room
 		const roomDiv = roomListArea.find("#room-name-" + room);
 		
 		// Add the room
 		if (roomDiv.length == 0) {
 			roomListArea.append(
-				$("<div id='room-name-" + room + "'></div>")
+				$("<div id='room-name-" + room + "' style='width: 100%;'></div>")
 					.append(UI.getRoomDisplay(room))
 			);
+
+            $("#room-name-" + room).on("click", () => {
+                console.log("join room btn clicked")
+                Socket.joinRoom(room)
+            })
 		}
 	};
 
@@ -171,8 +182,10 @@ const MainMenu = (function(){
 	const removeRoom = function(room) {
         const roomListArea = $("#room-list-panel");
 		
+        console.log(room)
 		// Find the room
 		const roomDiv = roomListArea.find("#room-name-" + room);
+
 		
 		// Remove the user
 		if (roomDiv.length > 0) roomDiv.remove();
@@ -291,12 +304,9 @@ const RoomPanel= (function() {
             $("#ready-check").text("ready")
         })
 
-        $("#ready-check").on("click", () => {
-            
-            if($("#ready-check").text() == "ready"){
-                $("#ready-check").text("cancel")
-            }else{
-                $("#ready-check").text("ready")
+        $("#request-start-game").on("click",() => {
+            if($("#room-title").text() !== ""){
+                Socket.requestStartGame($("#room-title").text())
             }
         })
     };
@@ -307,12 +317,7 @@ const RoomPanel= (function() {
         const RoomTitle = $("#room-title")
 
 
-        if (roomName == "") {
-            RoomTitle.text(roomName)
-        }
-        else {
-            RoomTitle.text("");
-        }
+        RoomTitle.text(roomName)
     };
 
     const updateRoomUsers = function(Users){
@@ -336,14 +341,16 @@ const RoomPanel= (function() {
     const addUser = function(user) {
         const RoomUserList = $("#room-user-list");
         
+
+        console.log(user)
         // Find the user
         const userDiv = RoomUserList.find("#username-" + user.name);
         
         // Add the user
         if (userDiv.length == 0) {
             RoomUserList.append(
-                $("<div id='username-" + user.name + "'></div>")
-                    .append(UI.getUserDisplay(user))
+                $("<div id='username-" + user.name + "' style='width: 100%;'></div>")
+                    .append(UI.getUserDisplay(user.name))
             );
         }
     };
@@ -380,7 +387,7 @@ const UI = (function() {
     // This function gets the user display
     const getUserDisplay = function(username) {
         return $("<div class='field-content row shadow'></div>")
-            .append($("<span class='user-name'> Player Name: " + username + "</span>" + "<div class='spacer-grow'></div>" + "<span class='ready-status'><span class='material-icons'>exit_to_app</span>"))
+            .append($("<span class='user-name'> Player Name: " + username + "</span>" + "<div class='spacer-grow'></div>"))
     };
 
     const getRoomDisplay = function(room){
@@ -448,6 +455,14 @@ const UI = (function() {
         console.log("displaying room panel")
     }
 
+    const toGame = function(){
+        $("#menu-overlay").hide()
+    }
 
-    return { getUserDisplay, getRoomDisplay, initialize , startingScreen, frontPage,  mainMenu, createRoom, roomPanel};
+    const toMenu = function(){
+        $("#menu-overlay").show()
+    }
+
+
+    return { getUserDisplay, getRoomDisplay, initialize , startingScreen, frontPage,  mainMenu, createRoom, roomPanel, toGame, toMenu};
 })();

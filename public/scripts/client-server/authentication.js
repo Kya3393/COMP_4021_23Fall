@@ -1,6 +1,6 @@
 const Authentication = (function() {
     // This stores the current signed-in user
-    //{username, name}
+    //{username, name, room}
     let user = null;
 
     // This function gets the signed-in user
@@ -113,6 +113,57 @@ const Authentication = (function() {
         })
 
     };
+
+    const joinRoom = function(room_name, onSuccess, onError){
+
+        const json = JSON.stringify({username: Authentication.getUser().username, room_name})
+
+        fetch("/joinRoom", {
+            method: 'post',
+            headers: {"Content-type": "application/json"},
+            body: json
+        })
+            .then((res) => res.json() )
+            .then((json) => {
+                console.log(json)
+                if(json.status == "success"){
+                    room = json.user.room
+                    onSuccess()
+                }else if(onError){
+                    onError(json.error)
+                }
+                
+            })
+            .catch((err) => {
+                console.log("Error!");
+        });
+    }
+
+    const leaveRoom = function(room_name, onSuccess, onError){
+
+
+        const json = JSON.stringify({username: Authentication.getUser().username, room_name})
+
+        fetch("/leaveRoom", {
+            method: 'post',
+            headers: {"Content-type": "application/json"},
+            body: json
+        })
+            .then((res) => res.json() )
+            .then((json) => {
+                console.log(json)
+                if(json.status == "success"){
+                    room = null
+                    onSuccess()
+                }else if(onError){
+                    onError(json.error)
+                }
+                
+            })
+            .catch((err) => {
+                console.log("Error!");
+        });
+    }
 
     return { getUser, signin, validate, signout };
 })();

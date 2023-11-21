@@ -30,6 +30,9 @@ function containWordCharsOnly(text) {
     return /^\w+$/.test(text);
 }
 
+const onlineUsers = {};
+const gameRoomList = {};
+
 // Handle the /register endpoint
 app.post("/register", (req, res) => {
     // Get the JSON data from the body
@@ -121,6 +124,7 @@ app.get("/validate", (req, res) => {
     //
     // B. Getting req.session.user
     //
+
     if(!req.session.user){
         res.json({ status: "error", error: "Please login" });
         return
@@ -153,6 +157,24 @@ app.get("/validate", (req, res) => {
  
 
 // });
+
+// app.post("/joinRoom", (req, res)  => {
+//         //
+//     // B. Getting req.session.user
+//     //
+
+//     if(!req.session.user){
+//         res.json({ status: "error", error: "Please login" });
+//         return
+//     }
+    
+
+//     //
+//     // D. Sending a success response with the user account
+//     //
+//     res.json({ status: "success", user: req.session.user })
+ 
+// })
 
 // Handle the /signout endpoint
 app.get("/signout", (req, res) => {
@@ -189,12 +211,12 @@ io.use((socket, next) => {
 });
 //socket.request.session.user
 
-const onlineUsers = {};
-const gameRoomList = {};
+
 
 
 io.on("connection", (socket) => {
     if(socket.request.session.user){
+        console.log(socket.request.session)
         onlineUsers[socket.request.session.user.username] = { name: socket.request.session.user.name}
         io.emit("add user", JSON.stringify(socket.request.session.user))
         socket.on("disconnect", ()=>{
@@ -240,14 +262,17 @@ io.on("connection", (socket) => {
                 //listen to roomName channel
                 socket.join(roomName)
 
-                const  username = socket.request.session.user.username
-
+                
                 //add user to the room info in server
+                const  username = socket.request.session.user.username
                 gameRoomList[roomName][username]  = socket.request.session.user.name
                 
                 //update the room info in ui
                 socket.emit("room info", {name: JSON.stringify(roomName), users: JSON.stringify(gameRoomList[roomName])})
                 
+                //set requesting user room to room name
+                socket.request.session.user.room  = roomName
+
                 //tell everyone 
                 socket.to(roomName).emit("add user in room", JSON.stringify(socket.request.session.user))
             }else{
@@ -267,19 +292,26 @@ io.on("connection", (socket) => {
                 //delete user name in room list
                 delete gameRoomList[roomName][socket.request.session.user.username]
 
+                //set requesting user room to null
+                socket.request.session.user.room  = null
+
                 //check if need to delete room (0ppl in room)
                 if(Object.keys(gameRoomList[roomName]).length == 0){
-                    socket.broadcast.emit("remove room", JSON.stringify(gameRoomList[roomName]))
+                    socket.broadcast.emit("remove room", JSON.stringify(roomName))
                     delete gameRoomList[roomName]
                 }else{
                     //change host
-                    socket.to(roomName).emit("update host")
+                    // socket.to(roomName).emit("update host")
                 }
 
                 socket.emit("leave room")
             }else{
                 console.log("user not in any room")
             }
+        })
+
+        socket.on("request start game", (room) => {
+            io.to(room).emit("start game")
         })
     }
 })

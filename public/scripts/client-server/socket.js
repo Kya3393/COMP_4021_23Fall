@@ -119,6 +119,8 @@ const Socket = (function() {
 
     const joinRoom = function(room){
         if(socket && socket.connected) {
+            console.log("join room socket emit")
+
             socket.emit("join room", room)
             UI.roomPanel(room)
             socket_room = room
@@ -139,6 +141,11 @@ const Socket = (function() {
                 users = JSON.parse(users)
     
                 RoomPanel.removeUser(users)
+            })
+
+            socket.on("start game", () => {
+                console.log("start game")
+                UI.toGame()
             })
         }
     }
@@ -175,6 +182,12 @@ const Socket = (function() {
         }else return false
     }
 
+    const requestStartGame =  function(room){
+        socket.emit("request start game", room)
+    }
 
-    return { getSocket, connect, disconnect, joinRoom, leaveRoom, createRoom, inRoom};
+
+
+
+    return { getSocket, connect, disconnect, joinRoom, leaveRoom, createRoom, inRoom,  requestStartGame};
 })();
