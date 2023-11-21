@@ -213,6 +213,7 @@ const StartingScreen = (function() {
         // Click event for the signout button
         $("#game-start").on("click", () => {
             $("#game-start").hide();
+            $("#game-start-countdown").hide();
             $("#menu-overlay").show()
             $("#front-page").show()
         });
@@ -456,7 +457,8 @@ const UI = (function() {
     }
 
     const toGame = function(){
-        $("#menu-overlay").hide()
+        $("#menu-overlay").hide();
+        //$("#game-start-countdown").show();
     }
 
     const toMenu = function(){

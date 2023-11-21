@@ -146,6 +146,7 @@ const Socket = (function() {
             socket.on("start game", () => {
                 console.log("start game")
                 UI.toGame()
+                GAME.gamePageInit()//<< working
             })
         }
     }

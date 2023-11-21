@@ -3,7 +3,7 @@
 // - `x` - The initial x position of the player
 // - `y` - The initial y position of the player
 // - `gameArea` - The bounding box of the game area
-const Player = function(ctx, x, y, gameArea) {
+const Player = function(ctx, x, y, gameArea, id) {
 
     // This is the sprite sequences of the player facing different directions.
     // It contains the idling sprite sequences `idleLeft`, `idleUp`, `idleRight` and `idleDown`,
@@ -26,6 +26,11 @@ const Player = function(ctx, x, y, gameArea) {
         bruh: {x: 0, y: 0, width: 2048, height: 2048, count: 6, timing: 50, loop: true},
     };
 
+    // Player attributes
+    const player_id = id;
+    let speed = 150;
+    let hp = 100;
+
     // This is the sprite object of the player created from the Sprite module.
     const sprite = Sprite(ctx, x, y);
 
@@ -42,13 +47,6 @@ const Player = function(ctx, x, y, gameArea) {
     // - `3` - moving to the right
     // - `4` - moving down
     let direction = 0;
-
-    // Player attributes !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    // default: 150
-    const id = 0;
-    let speed = 150;
-    let hp = 100;
-
 
     // This function sets the player's moving direction.
     // - `dir` - the moving direction (1: Left, 2: Up, 3: Right, 4: Down)
