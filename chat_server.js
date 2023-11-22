@@ -316,8 +316,17 @@ io.on("connection", (socket) => {
             console.log(gameRoomList[room])
             //console.log(gameRoomList[room][0])
             console.log("==========")
+
+            
+
             io.to(room).emit("start game", JSON.stringify(gameRoomList[room]))
+
+            socket.on("update game info", (new_game_info) => {
+                io.to(room).emit("new game info", new_game_info)
+            })
         })
+
+        
 
     }
 })

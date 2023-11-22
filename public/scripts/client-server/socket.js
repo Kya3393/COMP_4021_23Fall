@@ -145,6 +145,7 @@ const Socket = (function() {
 
             socket.on("start game", (users) => {
                 console.log("start game")
+                $("#counter").show()
                 UI.toGame()
                 users = JSON.parse(users)
                 console.log("users: " + users)
