@@ -143,11 +143,15 @@ const Socket = (function() {
                 RoomPanel.removeUser(users)
             })
 
-            socket.on("start game", () => {
+            socket.on("start game", (users) => {
                 console.log("start game")
                 UI.toGame()
-                GAME.gamePageInit()//<< working
+                users = JSON.parse(users)
+                console.log("users: " + users)
+                console.log("gamePageInit")
+                GAME.gamePageInit(users)//<< working
             })
+
         }
     }
 

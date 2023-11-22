@@ -6,18 +6,25 @@ const GAME = (function() {
     let ctx= null;
     let gameArea= null;
     let mouse_pos= { x: 0, y: 0 };
-    let player= null;
+    let players= [];
+    let self = null;
     let bullets=[];
     let weapons=[];//<< Put at server side?
 
-    const gamePageInit = function(){
+    const gamePageInit = function(users){
         cv = $("canvas").get(0);
         ctx = cv.getContext("2d");
         /* Create the game area */
         gameArea = BoundingBox(ctx, 50, 50, 950, 950);
 
         /* Create the sprites in the game */
-        player = Player(ctx, 500, 500, gameArea, "username"); // The player
+        for( const player in users){
+            console.log("drawing "+ player);
+            players.push(Player(ctx, 500, 500, gameArea, player)); 
+        }
+        self = players[0];
+        
+
         //weapons.push(Weapon(ctx, 500, 500));
         //weapons[0].randomize(gameArea);
 
@@ -34,23 +41,23 @@ const GAME = (function() {
         /* Handle the key down */
         // W key
         if (event.keyCode === 87) {
-            player.move(2); // Move up
+            self.move(2); // Move up
         }
         // S key
         if (event.keyCode === 83) {
-            player.move(4); // Move down
+            self.move(4); // Move down
         }
         // A key
         if (event.keyCode === 65) {
-            player.move(1); // Move left
+            self.move(1); // Move left
         }
         // D key
         if (event.keyCode === 68) {
-            player.move(3); // Move right
+            self.move(3); // Move right
         }
         // B key shoot bullet
         if (event.keyCode === 66) {
-            let{x, y} = player.getXY();
+            let{x, y} = self.getXY();
             const test_bullet = Bullet(ctx, x, y, mouse_pos.x, mouse_pos.y);
             bullets.push(test_bullet);
             //console.log("shoot");
@@ -68,19 +75,19 @@ const GAME = (function() {
         /* Handle the key up */
         // W key
         if (event.keyCode === 87) {
-            player.stop(2); // Move up
+            self.stop(2); // Move up
         }
         // S key
         if (event.keyCode === 83) {
-            player.stop(4); // Move down
+            self.stop(4); // Move down
         }
         // A key
         if (event.keyCode === 65) {
-            player.stop(1); // Move left
+            self.stop(1); // Move left
         }
         // D key
         if (event.keyCode === 68) {
-            player.stop(3); // Move right
+            self.stop(3); // Move right
         }
         // // spacebar key ( cheat )
         // if(event.keyCode == 32){
@@ -111,9 +118,10 @@ const GAME = (function() {
         }*/
 
         /* Update the sprites */
-        //for( const player of players){
+        for( const player of players){
             player.update(now);
-        //}
+            //emit
+        }
         /* Delete out of bound bullets */
         for( const del_bullet of bullets){
             const bullet_pos = del_bullet.getXY();
@@ -135,9 +143,9 @@ const GAME = (function() {
 
         /* Draw the objects */
         //1. Player
-       // for( const player of players){
+        for( const player of players){
             player.draw();
-        //}
+        }
         //2. Bullets
         for( const bullet of bullets){
             bullet.draw();
