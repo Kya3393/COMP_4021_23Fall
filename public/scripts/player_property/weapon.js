@@ -1,4 +1,4 @@
-const Weapon = function(ctx, x, y) {
+const Weapon = function(ctx, x, y, id) {
 
     const types = {
         pistol:  { range: 500, speed: 2, rate: 5, dmg: 20 },
@@ -22,6 +22,10 @@ const Weapon = function(ctx, x, y) {
         return this;
     };
 
+    const getId = function() {
+        return id;
+    };
+
     const setType = function(type){
         stats = types[type];
     }
@@ -40,14 +44,21 @@ const Weapon = function(ctx, x, y) {
         this.setXY(x, y);
     };
 
-    const draw = function() {
+    const draw = function(mouse_x ,mouse_y) {
         /* Save the settings */
         ctx.save();
 
         if(stats == types["pistol"])ctx.fillStyle = "blue";
         if(stats == types["rifle"])ctx.fillStyle = "red";
         if(stats == types["shotgun"])ctx.fillStyle = "green";
-        ctx.fillRect(x, y, 10, 10);
+
+        const dx = mouse_x - x;
+        const dy = mouse_y - y;
+        const angle = Math.atan2(dy, dx);
+        ctx.setTransform(1, 0, 0, 1, x, y);
+        //console.log(angle)
+        ctx.rotate(angle);
+        ctx.fillRect(0, 0, 100, 10);
 
         /* Restore saved settings */
         ctx.restore();
@@ -57,6 +68,7 @@ const Weapon = function(ctx, x, y) {
     return {
         getXY: getXY,
         setXY: setXY,
+        getId: getId,
         setType: setType,
         getStats: getStats,
         randomize: randomize,

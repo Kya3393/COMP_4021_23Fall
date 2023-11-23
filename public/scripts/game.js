@@ -12,6 +12,7 @@ const GAME = (function() {
     let weapons=[];//<< Put at server side?
 
     const gamePageInit = function(users){
+        $("counter").show();
         cv = $("canvas").get(0);
         ctx = cv.getContext("2d");
         /* Create the game area */
@@ -25,7 +26,7 @@ const GAME = (function() {
         self = players.find(player => player.getId() == Authentication.getUser().username);
         
 
-        //weapons.push(Weapon(ctx, 500, 500));
+        weapons.push(Weapon(ctx, 500, 500, self.getId()));
         //weapons[0].randomize(gameArea);
 
         cv.addEventListener('mousemove', function(event) {
@@ -137,6 +138,7 @@ const GAME = (function() {
         //if( (player.getBoundingBox()).isPointInBox(weapon_pos.x, weapon_pos.y)){    
         //    weapons[0].randomize(gameArea);
         //}
+        weapons.find(weapon => weapon.getId() == self.getId()).setXY(self.getXY().x,self.getXY().y);
 
         /* Clear the screen */
         ctx.clearRect(0, 0, cv.width, cv.height);
@@ -152,7 +154,7 @@ const GAME = (function() {
         }
         //3. Weapons
         for( const weapon of weapons){
-            weapon.draw();
+            weapon.draw(mouse_pos.x, mouse_pos.y);
         }
 
         requestAnimationFrame(doFrame);
