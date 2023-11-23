@@ -321,11 +321,25 @@ io.on("connection", (socket) => {
 
             io.to(room).emit("start game", JSON.stringify(gameRoomList[room]))
 
-            socket.on("update game info", (new_game_info) => {
-                io.to(room).emit("new game info", new_game_info)
-            })
+            // socket.on("update game info", (new_game_info) => {
+            //     io.to(room).emit("new game info", new_game_info)
+            // })
         })
 
+        socket.on("boardcast player pos", (x, y, player_id, room) => {
+            // console.log("boardcast player pos")
+            // console.log(x)
+            // console.log(y)
+            // console.log(player_id)
+            // console.log(room)
+            // console.log(gameRoomList[room])
+
+            io.to(room).emit("new player info", x, y, player_id)
+        })
+
+        socket.on("boardcast new bullet", (x, y, mouse_x, mouse_y, room) => {
+            io.to(room).emit("new bullet info", x, y, mouse_x, mouse_y)
+        })
         
 
     }

@@ -18,11 +18,11 @@ const GAME = (function() {
         gameArea = BoundingBox(ctx, 50, 50, 950, 950);
 
         /* Create the sprites in the game */
-        for( const player in users){
-            console.log("drawing "+ player);
-            players.push(Player(ctx, 500, 500, gameArea, player)); 
+        for( const player_id of Object.values(users)){
+            console.log("drawing "+ player_id);
+            players.push(Player(ctx, 500, 500, gameArea, player_id));
         }
-        self = players[0];
+        self = players.find(player => player.getId() == Authentication.getUser().username);
         
 
         //weapons.push(Weapon(ctx, 500, 500));
@@ -58,8 +58,9 @@ const GAME = (function() {
         // B key shoot bullet
         if (event.keyCode === 66) {
             let{x, y} = self.getXY();
-            const test_bullet = Bullet(ctx, x, y, mouse_pos.x, mouse_pos.y);
-            bullets.push(test_bullet);
+            const new_bullet = Bullet(ctx, x, y, mouse_pos.x, mouse_pos.y);
+            Socket.add_new_bullet(x, y, mouse_pos.x, mouse_pos.y);// emit
+            bullets.push(new_bullet);
             //console.log("shoot");
         }
 
@@ -116,7 +117,6 @@ const GAME = (function() {
             sounds.gameover.play();
             return;
         }*/
-
         /* Update the sprites */
         for( const player of players){
             player.update(now);
@@ -158,5 +158,18 @@ const GAME = (function() {
         requestAnimationFrame(doFrame);
     }
 
-    return { gamePageInit, doFrame};
+    const updateOtherPlayers = function(x, y, player_id) {
+        //console.log("updateOtherPlayers");
+        //console.log(player_id);
+        if(player_id != self.getId()){
+            players.find(player => player.getId() == player_id).setXY(x, y);
+            //players.find(player => player.getId() == player_id).setDirection(direction)
+        }
+    }
+
+    const addOtherBullets = function(x, y, mouse_x, mouse_y) {
+        bullets.push(Bullet(ctx, x, y, mouse_x, mouse_y));
+    }
+
+    return { gamePageInit, doFrame, updateOtherPlayers, addOtherBullets};
 })();

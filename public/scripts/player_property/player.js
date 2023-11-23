@@ -102,24 +102,22 @@ const Player = function(ctx, x, y, gameArea, id) {
             }
 
             /* Set the new position if it is within the game area */
-            if (gameArea.isPointInBox(x, y))
+            if (gameArea.isPointInBox(x, y)){
+                //console.log("Updating pos of :" + player_id)
+                Socket.update_player_pos(x, y, player_id)
                 sprite.setXY(x, y);
+            }
         }
 
         /* Update the sprite object */
         sprite.update(time);
     };
 
-    // Shoot Bullets //
-    const shoot = function(target_x, target_y) {
-
-        /* Save the settings */
-        ctx.save();
-
-        ctx.fillRect(target_x, target_y, 50, 50);
-
-        /* Restore saved settings */
-        ctx.restore();
+    const getId = function(){
+        return player_id;
+    }
+    const setDirection = function(dir){
+        direction = dir
     }
 
 
@@ -132,8 +130,10 @@ const Player = function(ctx, x, y, gameArea, id) {
         getBoundingBox: sprite.getBoundingBox,
         draw: sprite.draw,
         update: update,
-        shoot: shoot,
-        getXY: sprite.getXY
+        getXY: sprite.getXY,
+        setXY: sprite.setXY,
+        setDirection: setDirection,
+        getId: getId,
 
     };
 };

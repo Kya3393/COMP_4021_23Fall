@@ -145,14 +145,21 @@ const Socket = (function() {
 
             socket.on("start game", (users) => {
                 console.log("start game")
-                $("#counter").show()
                 UI.toGame()
                 users = JSON.parse(users)
-                console.log("users: " + users)
+                console.log("users:")
+                console.log(users)
                 console.log("gamePageInit")
                 GAME.gamePageInit(users)//<< working
             })
 
+            socket.on("new player info", (x, y, player_id) => {
+                GAME.updateOtherPlayers(x, y, player_id)//<< working
+            })
+
+            socket.on("new bullet info", (x, y, mouse_x, mouse_y) => {
+                GAME.addOtherBullets(x, y, mouse_x, mouse_y)//<< working
+            })
         }
     }
 
@@ -192,8 +199,13 @@ const Socket = (function() {
         socket.emit("request start game", room)
     }
 
+    const update_player_pos = function (x, y, player_id){
+        socket.emit("boardcast player pos", x, y, player_id, socket_room)
+    }
+    const add_new_bullet = function (x, y, mouse_x, mouse_y){
+        socket.emit("boardcast new bullet", x, y, mouse_x, mouse_y, socket_room)
+    }
 
 
-
-    return { getSocket, connect, disconnect, joinRoom, leaveRoom, createRoom, inRoom,  requestStartGame};
+    return { getSocket, connect, disconnect, joinRoom, leaveRoom, createRoom, inRoom,  requestStartGame, update_player_pos, add_new_bullet};
 })();
