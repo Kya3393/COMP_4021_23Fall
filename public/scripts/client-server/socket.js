@@ -157,8 +157,16 @@ const Socket = (function() {
                 GAME.updateOtherPlayers(x, y, player_id)//<< working
             })
 
-            socket.on("new bullet info", (x, y, mouse_x, mouse_y) => {
-                GAME.addOtherBullets(x, y, mouse_x, mouse_y)//<< working
+            socket.on("new bullet info", (x, y, mouse_x, mouse_y, id) => {
+                GAME.addOtherBullets(x, y, mouse_x, mouse_y, id)//<< working
+            })
+
+            socket.on("new hp info", (player_id, hp) => {
+                GAME.updateOtherHp(player_id, hp)
+            })
+
+            socket.on("new kills info", (player_id) => {
+                GAME.updateOtherKills(player_id)
             })
         }
     }
@@ -200,12 +208,19 @@ const Socket = (function() {
     }
 
     const update_player_pos = function (x, y, player_id){
-        socket.emit("boardcast player pos", x, y, player_id, socket_room)
+        socket.emit("broadcast player pos", x, y, player_id, socket_room)
     }
-    const add_new_bullet = function (x, y, mouse_x, mouse_y){
-        socket.emit("boardcast new bullet", x, y, mouse_x, mouse_y, socket_room)
+    const add_new_bullet = function (x, y, mouse_x, mouse_y, id){
+        socket.emit("broadcast new bullet", x, y, mouse_x, mouse_y, id, socket_room)
+    }
+
+    const update_player_hp = function (player_id, hp){
+        socket.emit("broadcast player hp", player_id, hp, socket_room)
+    }
+    const update_player_kills = function (player_id){
+        socket.emit("broadcast player kills", player_id, socket_room)
     }
 
 
-    return { getSocket, connect, disconnect, joinRoom, leaveRoom, createRoom, inRoom,  requestStartGame, update_player_pos, add_new_bullet};
+    return { getSocket, connect, disconnect, joinRoom, leaveRoom, createRoom, inRoom,  requestStartGame, update_player_pos, add_new_bullet, update_player_hp, update_player_kills};
 })();

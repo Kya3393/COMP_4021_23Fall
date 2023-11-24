@@ -1,15 +1,28 @@
-const Bullet = function(ctx, x, y, cursor_x, cursor_y) {
+const Bullet = function(ctx, x, y, cursor_x, cursor_y, id) {
 
     let speed = 5;
     let angle = 0;
     const origin_x = x;
     const origin_y = y;
+    let Hit = false;
 
     // This function sets the position.
     // - `xvalue` - The new x position
     // - `yvalue` - The new y position
     const getXY = function() {
         return {x, y};
+    };
+
+    const getId = function() {
+        return id;
+    };
+
+    const isHit = function() {
+        return Hit;
+    };
+
+    const setHit = function() {
+        Hit = true;
     };
 
     // This function sets the position.
@@ -64,6 +77,9 @@ const Bullet = function(ctx, x, y, cursor_x, cursor_y) {
     // The methods are returned as an object here.
     return {
         getXY: getXY,
+        getId: getId,
+        isHit: isHit,
+        setHit: setHit,
         setXY: setXY,
         setDestination: setDestination,
         draw: draw,

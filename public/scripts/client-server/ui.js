@@ -458,11 +458,12 @@ const UI = (function() {
 
     const toGame = function(){
         $("#menu-overlay").hide();
-        //$("#game-start-countdown").show();
+        $("#counter").show();
     }
 
     const toMenu = function(){
         $("#menu-overlay").show()
+        $("#counter").hide();
     }
 
 

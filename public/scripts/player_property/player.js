@@ -29,7 +29,8 @@ const Player = function(ctx, x, y, gameArea, id) {
     // Player attributes
     const player_id = id;
     let speed = 150;
-    let hp = 100;
+    let hp = 3;
+    let kills = 0;
 
     // This is the sprite object of the player created from the Sprite module.
     const sprite = Sprite(ctx, x, y);
@@ -120,6 +121,24 @@ const Player = function(ctx, x, y, gameArea, id) {
         direction = dir
     }
 
+    const decreaseHp = function(dmg){
+        hp -= dmg;
+    }
+    const setHp = function(cheat_hp){
+        hp = cheat_hp;
+        console.log("set hp to " + hp)
+    }
+    const getHp = function(){
+        console.log(id+"hp:"+hp);
+        return hp;
+    }
+    const increaseKill = function(){
+        kills +=1;
+        console.log(id+"increase kills:"+kills);
+    }
+    const getKills = function(){// for printing score
+        return kills;
+    }
 
     // The methods are returned as an object here.
     return {
@@ -134,6 +153,11 @@ const Player = function(ctx, x, y, gameArea, id) {
         setXY: sprite.setXY,
         setDirection: setDirection,
         getId: getId,
+        decreaseHp: decreaseHp,
+        setHp: setHp,
+        getHp: getHp,
+        increaseKill: increaseKill,
+        getKills: getKills
 
     };
 };

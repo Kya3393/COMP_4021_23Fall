@@ -326,8 +326,8 @@ io.on("connection", (socket) => {
             // })
         })
 
-        socket.on("boardcast player pos", (x, y, player_id, room) => {
-            // console.log("boardcast player pos")
+        socket.on("broadcast player pos", (x, y, player_id, room) => {
+            // console.log("broadcast player pos")
             // console.log(x)
             // console.log(y)
             // console.log(player_id)
@@ -337,8 +337,16 @@ io.on("connection", (socket) => {
             io.to(room).emit("new player info", x, y, player_id)
         })
 
-        socket.on("boardcast new bullet", (x, y, mouse_x, mouse_y, room) => {
-            io.to(room).emit("new bullet info", x, y, mouse_x, mouse_y)
+        socket.on("broadcast new bullet", (x, y, mouse_x, mouse_y, id, room) => {
+            io.to(room).emit("new bullet info", x, y, mouse_x, mouse_y, id)
+        })
+
+        socket.on("broadcast player hp", (player_id, hp, room) => {
+            io.to(room).emit("new hp info", player_id, hp)
+        })
+
+        socket.on("broadcast player kills", (player_id, room) => {
+            io.to(room).emit("new kills info", player_id)
         })
         
 

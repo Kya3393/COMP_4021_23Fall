@@ -1,15 +1,14 @@
 const GAME = (function() {
-    let totalGameTime= 60*3;   // Total game time in seconds
-    let gameStartTime= 0;     // The timestamp when the game starts
-    let killCounts= 0;      // The number of gems collected in the game
-    let cv= null;
-    let ctx= null;
-    let gameArea= null;
-    let mouse_pos= { x: 0, y: 0 };
-    let players= [];
+    let totalGameTime = 60*3;   // Total game time in seconds
+    let gameStartTime = 0; 
+    let cv = null;
+    let ctx = null;
+    let gameArea = null;
+    let mouse_pos = { x: 0, y: 0 };
+    let players = [];
     let self = null;
-    let bullets=[];
-    let weapons=[];//<< Put at server side?
+    let bullets =[];
+    let weapons =[];//<< Put at server side?
 
     const gamePageInit = function(users){
         $("counter").show();
@@ -59,8 +58,8 @@ const GAME = (function() {
         // B key shoot bullet
         if (event.keyCode === 66) {
             let{x, y} = self.getXY();
-            const new_bullet = Bullet(ctx, x, y, mouse_pos.x, mouse_pos.y);
-            Socket.add_new_bullet(x, y, mouse_pos.x, mouse_pos.y);// emit
+            const new_bullet = Bullet(ctx, x, y, mouse_pos.x, mouse_pos.y,self.getId());
+            Socket.add_new_bullet(x, y, mouse_pos.x, mouse_pos.y,self.getId());// emit
             bullets.push(new_bullet);
             //console.log("shoot");
         }
@@ -130,9 +129,24 @@ const GAME = (function() {
                 console.log("delete bullet");
                 bullets.splice(bullets.findIndex(bullet => bullet == del_bullet), 1);
             }
-            
         }
-
+        /* Handle bullet hits */
+        for( const hit_bullet of bullets){
+            const bullet_pos = hit_bullet.getXY();
+            if(self.getBoundingBox().isPointInBox(bullet_pos.x, bullet_pos.y) && hit_bullet.getId()!=self.getId() && !hit_bullet.isHit()){
+                //console.log("hit");
+                hit_bullet.setHit();
+                self.decreaseHp(1);
+                Socket.update_player_hp(self.getId(), self.getHp());// emit
+                if( self.getHp() <= 0){// use getHp to display Hp bar for each player?
+                    players.find(player => player.getId() == hit_bullet.getId()).increaseKill();
+                    //Socket.update_player_kills(hit_bullet.getId());// emit
+                    self.setHp(3);// respawn
+                    Socket.update_player_hp(self.getId(), self.getHp());// emit
+                }
+                bullets.splice(bullets.findIndex(bullet => bullet == hit_bullet), 1);
+            }
+        }
         // Pick up weapon
         //let weapon_pos = weapons[0].getXY();
         //if( (player.getBoundingBox()).isPointInBox(weapon_pos.x, weapon_pos.y)){    
@@ -169,9 +183,25 @@ const GAME = (function() {
         }
     }
 
-    const addOtherBullets = function(x, y, mouse_x, mouse_y) {
-        bullets.push(Bullet(ctx, x, y, mouse_x, mouse_y));
+    const updateOtherHp = function(player_id, hp) {
+        console.log("updateOtherHp")
+        if(player_id != self.getId()){
+            players.find(player => player.getId() == player_id).setHp(hp)
+        }
     }
 
-    return { gamePageInit, doFrame, updateOtherPlayers, addOtherBullets};
+    const updateOtherKills = function(player_id) {
+        console.log("updateOtherKills")
+        if(player_id != self.getId()){
+            players.find(player => player.getId() == player_id).increaseKill()
+        }
+    }
+
+    const addOtherBullets = function(x, y, mouse_x, mouse_y, id) {
+        if(id != self.getId()){
+            bullets.push(Bullet(ctx, x, y, mouse_x, mouse_y, id));
+        }
+    }
+
+    return { gamePageInit, doFrame, updateOtherPlayers, addOtherBullets, updateOtherHp, updateOtherKills};
 })();
