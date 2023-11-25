@@ -33,6 +33,12 @@ function containWordCharsOnly(text) {
 const onlineUsers = {};
 const gameRoomList = {};
 
+const playerKills = {};
+// Function to update player kills
+function updatePlayerKills(playerId, kills) {
+  playerKills[playerId] = kills;
+}
+
 // Handle the /register endpoint
 app.post("/register", (req, res) => {
     // Get the JSON data from the body
@@ -345,10 +351,14 @@ io.on("connection", (socket) => {
             io.to(room).emit("new hp info", player_id, hp)
         })
 
-        socket.on("broadcast player kills", (player_id, room) => {
+        socket.on("broadcast player kills", (player_id, kills, room) => {
+            updatePlayerKills(player_id, kills)
             io.to(room).emit("new kills info", player_id)
         })
         
+        socket.on("end game", (room) => {
+            io.to(room).emit("show end page", JSON.stringify(playerKills))
+        })
 
     }
 })

@@ -168,6 +168,13 @@ const Socket = (function() {
             socket.on("new kills info", (player_id) => {
                 GAME.updateOtherKills(player_id)
             })
+
+            socket.on("show end page", (playerScores) => {
+                UI.toEndPage()
+                playerScores = JSON.parse(playerScores)
+                console.log(playerScores);
+                $("#final-kills").text(playerScores[Authentication.getUser().username])
+            })
         }
     }
 
@@ -217,10 +224,14 @@ const Socket = (function() {
     const update_player_hp = function (player_id, hp){
         socket.emit("broadcast player hp", player_id, hp, socket_room)
     }
-    const update_player_kills = function (player_id){
-        socket.emit("broadcast player kills", player_id, socket_room)
+    const update_player_kills = function (player_id, kills){
+        socket.emit("broadcast player kills", player_id, kills, socket_room)
+    }
+
+    const endGame =  function(){
+        socket.emit("end game", socket_room)
     }
 
 
-    return { getSocket, connect, disconnect, joinRoom, leaveRoom, createRoom, inRoom,  requestStartGame, update_player_pos, add_new_bullet, update_player_hp, update_player_kills};
+    return { getSocket, connect, disconnect, joinRoom, leaveRoom, createRoom, inRoom,  requestStartGame, update_player_pos, add_new_bullet, update_player_hp, update_player_kills, endGame};
 })();

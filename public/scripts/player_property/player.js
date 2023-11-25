@@ -126,7 +126,7 @@ const Player = function(ctx, x, y, gameArea, id) {
     }
     const setHp = function(cheat_hp){
         hp = cheat_hp;
-        console.log("set hp to " + hp)
+        //console.log("set hp to " + hp)
     }
     const getHp = function(){
         console.log(id+"hp:"+hp);

@@ -8,6 +8,7 @@ const GAME = (function() {
     let players = [];
     let self = null;
     let bullets =[];
+    let bullet_amount = 30;
     let weapons =[];//<< Put at server side?
 
     const gamePageInit = function(users){
@@ -35,33 +36,44 @@ const GAME = (function() {
             mouse_pos.y = event.clientY - rect.top;
             //console.log('Mouse position:', mouse_pos.x, mouse_pos.y);
         });
+        cv.addEventListener("click", function(event) {
+            let{x, y} = self.getXY();
+            if(bullet_amount > 0){
+                const new_bullet = Bullet(ctx, x, y, mouse_pos.x, mouse_pos.y,self.getId());
+                Socket.add_new_bullet(x, y, mouse_pos.x, mouse_pos.y,self.getId());// emit
+                bullets.push(new_bullet);
+                bullet_amount--;
+                $("#bullet-remaining").text(bullet_amount);
+            }else{
+                $("#bullet-remaining").text("Press R to reload");
+            }
+        });
 
         /* Handle the keydown of arrow keys and spacebar */
         $(document).on("keydown", function(event) {
         /* Handle the key down */
         // W key
-        if (event.keyCode === 87) {
+        if (event.keyCode == 87) {
             self.move(2); // Move up
         }
         // S key
-        if (event.keyCode === 83) {
+        if (event.keyCode == 83) {
             self.move(4); // Move down
         }
         // A key
-        if (event.keyCode === 65) {
+        if (event.keyCode == 65) {
             self.move(1); // Move left
         }
         // D key
-        if (event.keyCode === 68) {
+        if (event.keyCode == 68) {
             self.move(3); // Move right
         }
-        // B key shoot bullet
-        if (event.keyCode === 66) {
-            let{x, y} = self.getXY();
-            const new_bullet = Bullet(ctx, x, y, mouse_pos.x, mouse_pos.y,self.getId());
-            Socket.add_new_bullet(x, y, mouse_pos.x, mouse_pos.y,self.getId());// emit
-            bullets.push(new_bullet);
-            //console.log("shoot");
+        // R key reload bullet
+        if (event.keyCode == 82) {
+            if(bullet_amount < 30){
+                bullet_amount = 30;
+                $("#bullet-remaining").text(bullet_amount);
+            }
         }
 
         // // spacebar key ( cheat )
@@ -75,19 +87,19 @@ const GAME = (function() {
         $(document).on("keyup", function(event) {
         /* Handle the key up */
         // W key
-        if (event.keyCode === 87) {
+        if (event.keyCode == 87) {
             self.stop(2); // Move up
         }
         // S key
-        if (event.keyCode === 83) {
+        if (event.keyCode == 83) {
             self.stop(4); // Move down
         }
         // A key
-        if (event.keyCode === 65) {
+        if (event.keyCode == 65) {
             self.stop(1); // Move left
         }
         // D key
-        if (event.keyCode === 68) {
+        if (event.keyCode == 68) {
             self.stop(3); // Move right
         }
         // // spacebar key ( cheat )
@@ -109,44 +121,49 @@ const GAME = (function() {
         const timeRemaining = Math.ceil((totalGameTime * 1000 - gameTimeSoFar) / 1000);
         $("#time-remaining").text(timeRemaining);
 
-        /* TODO */
         /* Handle the game over situation here */
-        /*if(timeRemaining <= 0){
-            $("#final-gems").text(collectedGems.toString());
-            $("#game-over").show();
-            sounds.gameover.play();
+        if(timeRemaining <= 0 ){
+            Socket.endGame();
+            //sounds.gameover.play();
             return;
-        }*/
+        }
         /* Update the sprites */
         for( const player of players){
             player.update(now);
             //emit
         }
-        /* Delete out of bound bullets */
+        /* Delete bullets */
         for( const del_bullet of bullets){
             const bullet_pos = del_bullet.getXY();
             if(!gameArea.isPointInBox(bullet_pos.x, bullet_pos.y)){
-                console.log("delete bullet");
+                //console.log("delete bullet");
                 bullets.splice(bullets.findIndex(bullet => bullet == del_bullet), 1);
-            }
-        }
-        /* Handle bullet hits */
-        for( const hit_bullet of bullets){
-            const bullet_pos = hit_bullet.getXY();
-            if(self.getBoundingBox().isPointInBox(bullet_pos.x, bullet_pos.y) && hit_bullet.getId()!=self.getId() && !hit_bullet.isHit()){
-                //console.log("hit");
-                hit_bullet.setHit();
-                self.decreaseHp(1);
-                Socket.update_player_hp(self.getId(), self.getHp());// emit
-                if( self.getHp() <= 0){// use getHp to display Hp bar for each player?
-                    players.find(player => player.getId() == hit_bullet.getId()).increaseKill();
-                    //Socket.update_player_kills(hit_bullet.getId());// emit
-                    self.setHp(3);// respawn
-                    Socket.update_player_hp(self.getId(), self.getHp());// emit
+            }else{
+                for( const player of players){
+                    if(player.getBoundingBox().isPointInBox(bullet_pos.x, bullet_pos.y) && del_bullet.getId()!=player.getId()){// avoid hitting owner
+                        if(player.getId() == self.getId() && !del_bullet.isHit()){// handle self is hit
+                            //console.log("hit");
+                            del_bullet.setHit();
+                            self.decreaseHp(1);
+                            $("#hp-remaining").text(self.getHp());
+                            Socket.update_player_hp(self.getId(), self.getHp());// emit
+            
+                            if( self.getHp() <= 0){// use getHp to display Hp bar for each player?
+                                let killer = players.find(player => player.getId() == del_bullet.getId())
+                                //killer.increaseKill();
+                                Socket.update_player_kills(killer.getId(),killer.getKills());// emit for server record
+                                self.setHp(3);// respawn
+                                $("#hp-remaining").text(self.getHp());
+                                Socket.update_player_hp(self.getId(), self.getHp());// emit
+                            }
+                        }
+                        bullets.splice(bullets.findIndex(bullet => bullet == del_bullet), 1);// remove hit bullets
+                    }
                 }
-                bullets.splice(bullets.findIndex(bullet => bullet == hit_bullet), 1);
             }
+            
         }
+        
         // Pick up weapon
         //let weapon_pos = weapons[0].getXY();
         //if( (player.getBoundingBox()).isPointInBox(weapon_pos.x, weapon_pos.y)){    
@@ -184,14 +201,14 @@ const GAME = (function() {
     }
 
     const updateOtherHp = function(player_id, hp) {
-        console.log("updateOtherHp")
+        //console.log("updateOtherHp")
         if(player_id != self.getId()){
             players.find(player => player.getId() == player_id).setHp(hp)
         }
     }
 
     const updateOtherKills = function(player_id) {
-        console.log("updateOtherKills")
+        //console.log("updateOtherKills")
         if(player_id != self.getId()){
             players.find(player => player.getId() == player_id).increaseKill()
         }
@@ -203,5 +220,9 @@ const GAME = (function() {
         }
     }
 
-    return { gamePageInit, doFrame, updateOtherPlayers, addOtherBullets, updateOtherHp, updateOtherKills};
+    const showSelfKills = function() {
+        return self.getKills();
+    }
+
+    return { gamePageInit, doFrame, updateOtherPlayers, addOtherBullets, updateOtherHp, updateOtherKills, showSelfKills};
 })();

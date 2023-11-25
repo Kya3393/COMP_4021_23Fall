@@ -466,6 +466,11 @@ const UI = (function() {
         $("#counter").hide();
     }
 
+    const toEndPage = function(){
+        $("#counter").hide();
+        $("#game-over").show();
+    }
 
-    return { getUserDisplay, getRoomDisplay, initialize , startingScreen, frontPage,  mainMenu, createRoom, roomPanel, toGame, toMenu};
+
+    return { getUserDisplay, getRoomDisplay, initialize , startingScreen, frontPage,  mainMenu, createRoom, roomPanel, toGame, toMenu, toEndPage};
 })();

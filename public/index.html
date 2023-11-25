@@ -25,9 +25,10 @@
                 <text x="50%" y="60%">Click here to start the game</text>
             </svg>
             <svg xmlns="http://www.w3.org/2000/svg" id="counter" style="display: none;">
-                <text x="10" y="35">
-                    TIME:<tspan id="time-remaining">20</tspan>
-                </text>
+                <text x="10" y="35">TIME:<tspan id="time-remaining">999</tspan></text>
+                <text x="10" y="65">HP:<tspan id="hp-remaining">3</tspan></text>
+                <text x="10" y="95">Bullet:<tspan id="bullet-remaining">30</tspan></text>
+                
             </svg>
             <div id="menu-overlay" class="overlay row" >
                 <div id="front-page" class="content shadow row">
@@ -120,7 +121,7 @@
                 </defs>
                 <text x="50%" y="50%">
                     Time's up! You have killed
-                    <tspan id="final-gems">0</tspan>
+                    <tspan id="final-kills">0</tspan>
                     enemy(ies).
                 </text>
             </svg>
