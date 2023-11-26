@@ -20,6 +20,13 @@ const GAME = (function() {
         pistol_no_ammo: new Audio("Assets/sfx/pistol_no_ammo.mp3"),
     }
 
+    const spawnPositions = [
+        { x: 150, y: 150 }, // Spawn position for players
+        { x: 850, y: 150 },
+        { x: 150, y: 850 },
+        { x: 850, y: 850 }
+    ];
+
     const gamePageInit = function(users){
         $("counter").show();
         cv = $("canvas").get(0);
@@ -28,10 +35,19 @@ const GAME = (function() {
         gameArea = BoundingBox(ctx, 50, 50, 950, 950);
 
         /* Create the sprites in the game */
-        for( const player_id of Object.values(users)){
-            console.log("drawing "+ player_id);
-            players.push(Player(ctx, 500, 500, gameArea, player_id));
-        }
+        // for( const player_id of Object.values(users)){
+        //     console.log("drawing "+ player_id);
+        //     players.push(Player(ctx, 500, 500, gameArea, player_id));
+        // }
+        // Iterate through the player IDs
+        Object.values(users).forEach((playerId, index) => {
+            console.log("Drawing " + playerId);
+            // Retrieve the corresponding spawn position based on the index
+            const spawnPosition = spawnPositions[index];
+            // Create the player object with the preset spawn position
+            players.push(Player(ctx, spawnPosition.x, spawnPosition.y, gameArea, playerId));
+        });
+
         self = players.find(player => player.getId() == Authentication.getUser().username);
         
         /* Randomly spawn weapons on ground */
@@ -47,12 +63,14 @@ const GAME = (function() {
             mouse_pos.y = event.clientY - rect.top;
             //console.log('Mouse position:', mouse_pos.x, mouse_pos.y);
         });
+
+        // Shoot bullet when mouse click
         cv.addEventListener("click", function(event) {
             //let{x, y} = self.getXY();
             if(bullet_amount > 0 && owned_weapon != null){
                 let {x,y} = owned_weapon.getXY()
-                const new_bullet = Bullet(ctx, x, y, mouse_pos.x, mouse_pos.y,self.getId());
-                Socket.add_new_bullet(x, y, mouse_pos.x, mouse_pos.y,self.getId());// emit
+                const new_bullet = Bullet(ctx, x, y, mouse_pos.x, mouse_pos.y,self.getId(), owned_weapon.getStats());
+                Socket.add_new_bullet(x, y, mouse_pos.x, mouse_pos.y,self.getId());// emit add stats info
                 
                 bullets.push(new_bullet);
                 bullet_amount--;
@@ -219,11 +237,13 @@ const GAME = (function() {
                 bullets.splice(bullets.findIndex(bullet => bullet == del_bullet), 1);
             }else{
                 for( const player of players){
-                    if(player.getBoundingBox().isPointInBox(bullet_pos.x, bullet_pos.y) && del_bullet.getId()!=player.getId()){// avoid hitting owner
-                        if(player.getId() == self.getId() && !del_bullet.isHit()){// handle self is hit
+                    // avoid hitting owner
+                    if(player.getBoundingBox().isPointInBox(bullet_pos.x, bullet_pos.y) && del_bullet.getId()!=player.getId()){
+                        // handle self is hit
+                        if(player.getId() == self.getId() && !del_bullet.isHit()){
                             //console.log("hit");
                             del_bullet.setHit();
-                            self.decreaseHp(1);
+                            self.decreaseHp(1);// set stats
                             $("#hp-remaining").text(self.getHp());
                             Socket.update_player_hp(self.getId(), self.getHp());// emit
             
