@@ -43,7 +43,7 @@ const Socket = (function() {
         })
 
         socket.on("room info", ({name, users}) =>{
-            
+
 
             name = JSON.parse(name)
             users = JSON.parse(users)
@@ -142,7 +142,7 @@ const Socket = (function() {
     }
 
     const joinRoom = function(room){
-        if(socket && socket.connected) {
+        if(socket ) {
             console.log("joining room")
             Authentication.joinRoom(room, ()=> {
                 console.log("emiting join room")

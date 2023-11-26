@@ -154,7 +154,7 @@
                 {
                     if(Authentication.getRoom()){
                         console.log("getting to room")
-                        Socket.returnToRoom(Authentication.getRoom())
+                        Socket.joinRoom(Authentication.getRoom())
                         UI.roomPanel(Authentication.getRoom())
                     }else{
                         console.log("getting in main menu")
