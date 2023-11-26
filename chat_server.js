@@ -259,7 +259,7 @@ io.on("connection", (socket) => {
 
         socket.on("create room", (roomName) => {
             gameRoomList[roomName] = {}
-            io.emit("add room", JSON.stringify(roomName))
+            io.emit("room list", JSON.stringify(gameRoomList))
         })
 
         socket.on("join room", (roomName) => {  
@@ -281,6 +281,7 @@ io.on("connection", (socket) => {
 
                 //tell everyone 
                 socket.to(roomName).emit("add user in room", JSON.stringify(socket.request.session.user))
+                io.emit("room list", JSON.stringify(gameRoomList))
             }else{
                 console.log("room does not exist")
             }
@@ -303,8 +304,6 @@ io.on("connection", (socket) => {
 
                 //check if need to delete room (0ppl in room)
                 if(Object.keys(gameRoomList[roomName]).length == 0){
-                    io.emit("remove room", JSON.stringify(roomName))
-                    console.log("delete room")
                     delete gameRoomList[roomName]
                 }else{
                     //change host
@@ -312,6 +311,7 @@ io.on("connection", (socket) => {
                 }
 
                 socket.emit("leave room")
+                io.emit("room list", JSON.stringify(gameRoomList))
             }else{
                 console.log("user not in any room")
             }
