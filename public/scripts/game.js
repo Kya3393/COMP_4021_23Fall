@@ -10,6 +10,7 @@ const GAME = (function() {
     let bullets =[];
     let bullet_amount = 30;
     let weapons =[];//<< Put at server side?
+    let reload_timeout = 2000
 
 
     const sounds = {
@@ -63,8 +64,6 @@ const GAME = (function() {
         var last_dir = 0;
         onkeydown = onkeyup = function(e){
             map[e.key] = e.type == 'keydown';
-
-            console.log(map)
             /* insert conditional here */
             switch(true){
                 //
@@ -90,6 +89,29 @@ const GAME = (function() {
             
         }
 
+
+        // weapon reload with timeout
+        var reloading = false
+        $(document).on("keypress", function(event){
+            // console.log("reloading: " + reloading)
+            // console.log("event : " + event.keyCode)
+            
+            if(reloading == false){
+                if (event.keyCode == 114  ||  event.keyCode  ==  82) {
+                    reloading = true
+                    sounds.reload.play()
+                    setTimeout(async function(){
+                        if(bullet_amount < 30){
+                            bullet_amount = 30;
+                            await $("#bullet-remaining").text(bullet_amount);
+                        }
+                        reloading = false
+                    }, reload_timeout)
+                    
+                }
+            }
+        })
+
         /* Handle the keydown of arrow keys and spacebar */
         $(document).on("keydown", function(event) {
         // /* Handle the key down */
@@ -110,13 +132,22 @@ const GAME = (function() {
         //     self.move(3); // Move right
         // }
         // R key reload bullet
-        if (event.keyCode == 82) {
-            sounds.reload.play()
-            if(bullet_amount < 30){
-                bullet_amount = 30;
-                $("#bullet-remaining").text(bullet_amount);
-            }
-        }
+        
+        // var reloading = false
+        // if(reloading === false){
+        //     if (event.keyCode == 82) {
+        //         reloading = true
+        //         sounds.reload.play()
+        //         setTimeout(async function(){
+        //             if(bullet_amount < 30){
+        //                 bullet_amount = 30;
+        //                 await $("#bullet-remaining").text(bullet_amount);
+        //             }
+        //             reloading = false
+        //         }, reload_timeout)
+                
+        //     }
+        // }
 
         // // // spacebar key ( cheat )
         // // if(event.keyCode == 32){
