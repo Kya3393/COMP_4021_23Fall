@@ -396,6 +396,34 @@ const RoomPanel= (function() {
     return { initialize, show, hide, updateRoomName, updateRoomUsers, addUser, removeUser, update };
 })();
 
+const EndingScreen = (function( ) {
+    // This function initializes the UI
+    const initialize = function() {
+        // Click event for the signout button
+        $("#game-over").on("click", () => {
+            $("#game-over").hide();
+            $("#menu-overlay").show()
+            $("#room-panel").show()
+        });
+    };
+
+    // This function shows the form with the user
+    const show = function() {
+        $("#game-over").show();
+        $("#menu-overlay").hide()
+    };
+
+    // This function hides the form
+    const hide = function() {
+        $("#game-over").hide();
+        $("#menu-overlay").show()
+    };
+
+
+
+        return { initialize, show, hide };
+})();
+
 const UI = (function() {
     // This function gets the user display
     const getUserDisplay = function(username) {
@@ -416,10 +444,11 @@ const UI = (function() {
             .append($("<span class='room-name'>" + room + "</span>" + "<div class='spacer-grow'></div>" + "<span style='color: var(--button-color);'> " + user_count + "/4 </span>" + "<button id='button-id-"+ room + "' class='join-room-button'><span class='join-room-text'>Join</span></button"))
         }
 
+
     }
 
     // The components of the UI are put here, but only under the menu overlay: not including the game session
-    const components = [SignInForm, UserPanel, MainMenu, StartingScreen, CreateRoom, RoomPanel ];
+    const components = [SignInForm, UserPanel, MainMenu, StartingScreen, CreateRoom, RoomPanel ,  EndingScreen];
 
     // This function initializes the UI
     const initialize = function() {
@@ -482,6 +511,7 @@ const UI = (function() {
 
     const toGame = function(){
         $("#menu-overlay").hide();
+        $("#game-over").hide()
         $("#counter").show();
     }
 

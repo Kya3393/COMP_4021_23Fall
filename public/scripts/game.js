@@ -53,6 +53,7 @@ const GAME = (function() {
                 bullets.push(new_bullet);
                 bullet_amount--;
 
+                sounds.pistol.currentTime = 0
                 sounds.pistol.play()
                 $("#bullet-remaining").text(bullet_amount);
             }else{
