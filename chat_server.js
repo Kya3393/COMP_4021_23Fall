@@ -259,7 +259,7 @@ io.on("connection", (socket) => {
 
         socket.on("create room", (roomName) => {
             gameRoomList[roomName] = {}
-            socket.broadcast.emit("add room", JSON.stringify(roomName))
+            io.emit("add room", JSON.stringify(roomName))
         })
 
         socket.on("join room", (roomName) => {  
@@ -303,7 +303,8 @@ io.on("connection", (socket) => {
 
                 //check if need to delete room (0ppl in room)
                 if(Object.keys(gameRoomList[roomName]).length == 0){
-                    socket.broadcast.emit("remove room", JSON.stringify(roomName))
+                    io.emit("remove room", JSON.stringify(roomName))
+                    console.log("delete room")
                     delete gameRoomList[roomName]
                 }else{
                     //change host

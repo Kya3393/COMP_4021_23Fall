@@ -180,6 +180,7 @@ const Socket = (function() {
 
     const leaveRoom = function(room){
         if(socket && socket.connected) {
+            console.log("leaving room")
             socket.emit("leave room", room)
             socket_room = null
 

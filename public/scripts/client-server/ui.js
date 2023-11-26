@@ -140,12 +140,13 @@ const MainMenu = (function(){
         // Clear the game room area
         roomListArea.empty();
 
+        console.log(roomList)
 
         // Add the user one-by-one
         for (const room in roomList) {
             roomListArea.append(
                 $("<div id='room-name-" + room + "' style='width: 100%;'></div>")
-                    .append(UI.getRoomDisplay(room))
+                    .append(UI.getRoomDisplay(room, roomList[room]))
             );
 
             $("#room-name-" + room).on("click", () => {
@@ -159,6 +160,8 @@ const MainMenu = (function(){
     // This function adds a user in the panel
 	const addRoom = function(room) {
         const roomListArea = $("#room-list-panel");
+
+
 		
         console.log(room)
 		// Find the room
@@ -342,8 +345,8 @@ const RoomPanel= (function() {
     const addUser = function(user) {
         const RoomUserList = $("#room-user-list");
         
-
         console.log(user)
+
         // Find the user
         const userDiv = RoomUserList.find("#username-" + user.name);
         
@@ -359,9 +362,11 @@ const RoomPanel= (function() {
     // This function removes a user from the panel
     const removeUser = function(user) {
         const RoomUserList = $("#room-user-list");
+
+        console.log("removing : " + user)
         
         // Find the user
-        const userDiv = RoomUserList.find("#username-" + user.name);
+        const userDiv = RoomUserList.find("#username-" + user);
         
         // Remove the user
         if (userDiv.length > 0) userDiv.remove();
@@ -391,9 +396,18 @@ const UI = (function() {
             .append($("<span class='user-name'> Player Name: " + username + "</span>" + "<div class='spacer-grow'></div>"))
     };
 
-    const getRoomDisplay = function(room){
-        return $("<div class='field-content row shadow'></div>")
-            .append($("<span class='room-name'>" + room + "</span>" + "<div class='spacer-grow'></div>" + "<button id='button-id-"+ room + "' class='join-room-button'><span class='join-room-text'>Join</span></button"))
+    const getRoomDisplay = function(room, users =  null){
+        if(!users){
+            return $("<div class='field-content row shadow'></div>")
+                .append($("<span class='room-name'>" + room + "</span>" + "<div class='spacer-grow'></div>" + "<button id='button-id-"+ room + "' class='join-room-button'><span class='join-room-text'>Join</span></button"))
+        }else{
+            var user_count = 0
+            for(user in users){
+                user_count++
+            }
+            return $("<div class='field-content row shadow'></div>")
+            .append($("<span class='room-name'>" + room + "</span>" + "<div class='spacer-grow'></div>" + "<span style='color: var(--button-color);'> " + user_count + "/4 </span>" + "<button id='button-id-"+ room + "' class='join-room-button'><span class='join-room-text'>Join</span></button"))
+        }
 
     }
 

@@ -322,3 +322,7 @@ canvas {
 .join-room-text{
     color: var(--button-color);
 }
+
+.room-title{
+    color: var(--menu-title-color);
+}
