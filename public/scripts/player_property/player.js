@@ -114,7 +114,7 @@ const Player = function(ctx, x, y, gameArea, id) {
         if (direction != 0) {
             let { x, y } = sprite.getXY();
 
-            console.log(direction)
+            //console.log(direction)
             /* Move the player */
             switch (direction) {
                 case 1: x -= speed / 60; break;
@@ -145,7 +145,9 @@ const Player = function(ctx, x, y, gameArea, id) {
     const setDirection = function(dir){
         direction = dir
     }
-
+    const getDirection = function(){
+        return direction
+    }
     const decreaseHp = function(dmg){
         hp -= dmg;
     }
@@ -177,6 +179,7 @@ const Player = function(ctx, x, y, gameArea, id) {
         getXY: sprite.getXY,
         setXY: sprite.setXY,
         setDirection: setDirection,
+        getDirection: getDirection,
         getId: getId,
         decreaseHp: decreaseHp,
         setHp: setHp,

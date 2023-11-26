@@ -176,15 +176,15 @@ const Socket = (function() {
                     console.log("users:")
                     console.log(users)
                     console.log("gamePageInit")
-                    GAME.gamePageInit(users)//<< working
+                    GAME.gamePageInit(users)
                 })
 
                 socket.on("new player info", (x, y, player_id) => {
-                    GAME.updateOtherPlayers(x, y, player_id)//<< working
+                    GAME.updateOtherPlayers(x, y, player_id)
                 })
 
                 socket.on("new bullet info", (x, y, mouse_x, mouse_y, id) => {
-                    GAME.addOtherBullets(x, y, mouse_x, mouse_y, id)//<< working
+                    GAME.addOtherBullets(x, y, mouse_x, mouse_y, id)
                 })
 
                 socket.on("new hp info", (player_id, hp) => {
@@ -201,6 +201,21 @@ const Socket = (function() {
                     console.log(playerScores);
                     $("#final-kills").text(playerScores[Authentication.getUser().username])
                 })
+
+                socket.on("draw weapon", (initialWeaponInfo) => {
+                    let weapons = JSON.parse(initialWeaponInfo)
+                    console.log(weapons)
+                    GAME.drawSpawnedWeapons(weapons);
+                })
+
+                socket.on("new weapon owner", (weapon_id, player_id) => {
+                    GAME.addWeaponsOwner(weapon_id, player_id)
+                })
+
+                socket.on("set others mouse angle", (weapon_id, angle) => {
+                    GAME.setWeaponsAngle(weapon_id, angle)
+                })
+
             },  ()=>{
                 console.log("join room fail")
             })
@@ -278,6 +293,19 @@ const Socket = (function() {
         socket.emit("end game", socket_room)
     }
 
+    const spawnWeapon =  function(){
+        socket.emit("spawn weapon", socket_room)
+    }
+    const update_weapon_owner = function ( weapon_id, player_id){
+        socket.emit("broadcast weapon owner", weapon_id, player_id, socket_room)
+    }
 
-    return { getSocket, connect, disconnect, joinRoom, leaveRoom, createRoom, inRoom,  requestStartGame, update_player_pos, add_new_bullet, update_player_hp, update_player_kills, endGame, getRoomInfo, returnToRoom};
+    const broadcastMouseAngle = function ( weapon_id, angle ){
+        socket.emit("broadcast mouse angle",weapon_id, angle, socket_room)
+    }
+    return { 
+        getSocket, connect, disconnect, joinRoom, leaveRoom, createRoom, inRoom,  requestStartGame,
+        update_player_pos, add_new_bullet, update_player_hp, update_player_kills,
+        endGame, getRoomInfo, returnToRoom,
+        spawnWeapon, update_weapon_owner, broadcastMouseAngle};
 })();

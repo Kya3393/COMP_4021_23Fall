@@ -10,6 +10,7 @@ const GAME = (function() {
     let bullets =[];
     let bullet_amount = 30;
     let weapons =[];//<< Put at server side?
+    let owned_weapon = null;
     let reload_timeout = 2000
 
 
@@ -33,8 +34,10 @@ const GAME = (function() {
         }
         self = players.find(player => player.getId() == Authentication.getUser().username);
         
-
-        weapons.push(Weapon(ctx, 500, 500, self.getId()));
+        /* Randomly spawn weapons on ground */
+        Socket.spawnWeapon();
+        drawSpawnedWeapons();
+        //weapons.push(Weapon(ctx, 500, 500));
         //weapons[0].randomize(gameArea);
 
         cv.addEventListener('mousemove', function(event) {
@@ -45,8 +48,9 @@ const GAME = (function() {
             //console.log('Mouse position:', mouse_pos.x, mouse_pos.y);
         });
         cv.addEventListener("click", function(event) {
-            let{x, y} = self.getXY();
-            if(bullet_amount > 0){
+            //let{x, y} = self.getXY();
+            if(bullet_amount > 0 && owned_weapon != null){
+                let {x,y} = owned_weapon.getXY()
                 const new_bullet = Bullet(ctx, x, y, mouse_pos.x, mouse_pos.y,self.getId());
                 Socket.add_new_bullet(x, y, mouse_pos.x, mouse_pos.y,self.getId());// emit
                 
@@ -206,9 +210,8 @@ const GAME = (function() {
         /* Update the sprites */
         for( const player of players){
             player.update(now);
-            //emit
         }
-        /* Delete bullets */
+        /* Update and Delete bullets */
         for( const del_bullet of bullets){
             const bullet_pos = del_bullet.getXY();
             if(!gameArea.isPointInBox(bullet_pos.x, bullet_pos.y)){
@@ -239,14 +242,34 @@ const GAME = (function() {
             }
             
         }
-        
-        // Pick up weapon
-        //let weapon_pos = weapons[0].getXY();
-        //if( (player.getBoundingBox()).isPointInBox(weapon_pos.x, weapon_pos.y)){    
-        //    weapons[0].randomize(gameArea);
-        //}
-        weapons.find(weapon => weapon.getId() == self.getId()).setXY(self.getXY().x,self.getXY().y);
+        // Update Weapons
+        for( weapon of weapons){
+            let weapon_pos = weapon.getXY();
 
+            // Pick up weapon
+            if( (self.getBoundingBox()).isPointInBox(weapon_pos.x, weapon_pos.y)){    
+                if(weapon.getOwner() == null){
+                    console.log("Pick Up")
+                    if(owned_weapon == null){
+                        weapon.setOwner(self.getId())
+                        owned_weapon = weapon
+                        Socket.update_weapon_owner(weapon.getId(), self.getId())// emit
+                    }
+                }
+            }
+            
+            if(weapon.getOwner() !=null){
+                let {x,y} = players.find(player => player.getId() == weapon.getOwner()).getXY();
+                weapon.setXY(x+20,y)
+            }
+        }
+
+        // set owned weapon pos to self pos
+        // if(owned_weapon != null){
+        //     owned_weapon.setXY(self.getXY().x + 20, self.getXY().y)
+        // }
+        
+        
         /* Clear the screen */
         ctx.clearRect(0, 0, cv.width, cv.height);
 
@@ -261,7 +284,7 @@ const GAME = (function() {
         }
         //3. Weapons
         for( const weapon of weapons){
-            weapon.draw(mouse_pos.x, mouse_pos.y);
+            weapon.draw(mouse_pos.x, mouse_pos.y, self.getId());
         }
 
         requestAnimationFrame(doFrame);
@@ -300,5 +323,27 @@ const GAME = (function() {
         return self.getKills();
     }
 
-    return { gamePageInit, doFrame, updateOtherPlayers, addOtherBullets, updateOtherHp, updateOtherKills, showSelfKills};
+    const drawSpawnedWeapons = function(Weapons){
+        for( var key in Weapons){
+            weapons.push(Weapon(ctx, Weapons[key].Pos.x, Weapons[key].Pos.y, Weapons[key].Type, Weapons[key].Stats, key ));
+            //console.log(key)
+        }
+        console.log("added to list")
+        console.log(weapons)
+    }
+
+    const addWeaponsOwner = function(id, owner) {
+        if( owner != self.getId()){
+            console.log(id +": " + owner)
+            weapons[id].setOwner(owner) 
+        }
+    }
+
+    const setWeaponsAngle = function(id, angle) {
+        if( weapons[id].getOwner() != self.getId()){
+            weapons[id].setAngle(angle) 
+        }
+    }
+
+    return { gamePageInit, doFrame, updateOtherPlayers, addOtherBullets, updateOtherHp, updateOtherKills, showSelfKills, drawSpawnedWeapons, addWeaponsOwner, setWeaponsAngle};
 })();

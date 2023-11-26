@@ -39,6 +39,40 @@ function updatePlayerKills(playerId, kills) {
   playerKills[playerId] = kills;
 }
 
+const weaponList = {};
+const weaponTypes = {
+    pistol:  { range: 500, speed: 2, rate: 5, dmg: 20 },
+    rifle:    { range: 1000, speed: 5, rate: 10, dmg: 40 },
+    shotgun: { range: 200, speed: 2, rate: 1, dmg: 10 }
+};
+function initializeWeapons() {
+    const spawnPositions = [
+        { x: 100, y: 100 },
+        { x: 900, y: 100 },
+        { x: 100, y: 900 },
+        { x: 900, y: 900 }
+        // Add more spawn positions as needed
+      ];
+    
+      // Randomly assign weapon types to spawn positions
+      const randomizedWeaponTypes = Object.keys(weaponTypes).sort(() => 0.5 - Math.random());
+      for (let i = 0; i < spawnPositions.length; i++) {
+        const Pos = spawnPositions[i];
+        const Type = randomizedWeaponTypes[i % randomizedWeaponTypes.length];
+        const Stats = weaponTypes[Type];
+        
+        // Store the weapon type and spawn position in the weaponList object
+        weaponList[i] = {
+            Type,
+            Pos,
+          ...Stats
+        };
+      }
+      
+      // Output the initialized weapon list for verification
+      console.log(weaponList);
+}
+
 // Handle the /register endpoint
 app.post("/register", (req, res) => {
     // Get the JSON data from the body
@@ -227,11 +261,6 @@ app.get("/signout", (req, res) => {
 });
 
 
-//
-// ***** Please insert your Lab 6 code here *****
-//
-
-
 const { createServer } = require("http")
 const { Server } =  require("socket.io")
 const httpServer = createServer(app)
@@ -378,9 +407,7 @@ io.on("connection", (socket) => {
 
             io.to(room).emit("start game", JSON.stringify(gameRoomList[room]))
 
-            // socket.on("update game info", (new_game_info) => {
-            //     io.to(room).emit("new game info", new_game_info)
-            // })
+            initializeWeapons()
         })
 
         socket.on("broadcast player pos", (x, y, player_id, room) => {
@@ -411,10 +438,21 @@ io.on("connection", (socket) => {
             io.to(room).emit("show end page", JSON.stringify(playerKills))
         })
 
+        socket.on("spawn weapon", (room) => {
+            io.to(room).emit("draw weapon", JSON.stringify(weaponList))
+        })
+
+        socket.on("broadcast weapon owner", (weapon_id, player_id, room) => {
+            io.to(room).emit("new weapon owner", weapon_id, player_id)
+        })
+
+        socket.on("broadcast mouse angle", (weapon_id, angle, room) => {
+            io.to(room).emit("set others mouse angle", weapon_id, angle)
+        })
     }
 })
 
 // Use a web server to listen at port 8000
 httpServer.listen(8000, () => {
-    console.log("The chat server has started...");
+    console.log("The game server has started...");
 });
