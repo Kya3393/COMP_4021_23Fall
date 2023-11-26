@@ -90,8 +90,8 @@ const GAME = (function() {
             
         }
 
-        // /* Handle the keydown of arrow keys and spacebar */
-        // $(document).on("keydown", function(event) {
+        /* Handle the keydown of arrow keys and spacebar */
+        $(document).on("keydown", function(event) {
         // /* Handle the key down */
         // // W key
         // if (event.keyCode == 87) {
@@ -109,14 +109,14 @@ const GAME = (function() {
         // if (event.keyCode == 68) {
         //     self.move(3); // Move right
         // }
-        // // R key reload bullet
-        // if (event.keyCode == 82) {
-        //     sounds.reload.play()
-        //     if(bullet_amount < 30){
-        //         bullet_amount = 30;
-        //         $("#bullet-remaining").text(bullet_amount);
-        //     }
-        // }
+        // R key reload bullet
+        if (event.keyCode == 82) {
+            sounds.reload.play()
+            if(bullet_amount < 30){
+                bullet_amount = 30;
+                $("#bullet-remaining").text(bullet_amount);
+            }
+        }
 
         // // // spacebar key ( cheat )
         // // if(event.keyCode == 32){
@@ -148,7 +148,7 @@ const GAME = (function() {
         // // if(event.keyCode == 32){
         // //     player.slowDown();
         // // }
-        // });
+        });
 
         /* Start the game */
         requestAnimationFrame(doFrame);

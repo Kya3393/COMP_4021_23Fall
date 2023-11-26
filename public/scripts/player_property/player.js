@@ -121,10 +121,10 @@ const Player = function(ctx, x, y, gameArea, id) {
                 case 2: y -= speed / 60; break;
                 case 3: x += speed / 60; break;
                 case 4: y += speed / 60; break;
-                case 5: x -= speed / 60; y += speed / 60; break;
-                case 6: y -= speed / 60; x -= speed / 60; break;
-                case 7: x += speed / 60; y -= speed / 60; break;
-                case 8: y += speed / 60; x += speed / 60; break;
+                case 5: x -= Math.sqrt(2) *speed / 120; y += Math.sqrt(2) *speed / 120; break;
+                case 6: y -= Math.sqrt(2) *speed / 120; x -= Math.sqrt(2) *speed / 120; break;
+                case 7: x += Math.sqrt(2) *speed / 120; y -= Math.sqrt(2) *speed / 120; break;
+                case 8: y += Math.sqrt(2) *speed / 120; x += Math.sqrt(2) *speed / 120; break;
             }
 
             /* Set the new position if it is within the game area */
