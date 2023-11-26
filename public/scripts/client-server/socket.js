@@ -55,6 +55,24 @@ const Socket = (function() {
         socket.on("leave room", () => {
             UI.mainMenu()
         })
+
+        socket.on("user in room", (users) => {
+            users = JSON.parse(users)
+
+            RoomPanel.updateRoomUsers(users)
+        })
+
+        socket.on("add user in room", (users) => {
+            users = JSON.parse(users)
+
+            RoomPanel.addUser(users)
+        })
+
+        socket.on("remove user in room", (users) => {
+            users = JSON.parse(users)
+
+            RoomPanel.removeUser(users)
+        })
         // // Set up the users event
         // socket.on("users", (onlineUsers) => {
         //     onlineUsers = JSON.parse(onlineUsers);
@@ -104,6 +122,12 @@ const Socket = (function() {
         socket_room = null
     };
 
+    const getRoomInfo =  function(room){
+        console.log(`getting room ${room} info`)
+        socket.emit("get room info", room)
+    }
+
+
     // This function sends a post message event to the server
     // const postMessage = function(content) {
     //     if (socket && socket.connected) {
@@ -119,89 +143,109 @@ const Socket = (function() {
 
     const joinRoom = function(room){
         if(socket && socket.connected) {
-            console.log("join room socket emit")
+            console.log("joining room")
+            Authentication.joinRoom(room, ()=> {
+                console.log("emiting join room")
+                socket.emit("join room", room)
+                console.log("changing ui")
+                UI.roomPanel(room)
+                socket_room = room
 
-            socket.emit("join room", room)
-            UI.roomPanel(room)
-            socket_room = room
+                socket.on("user in room", (users) => {
+                    users = JSON.parse(users)
+        
+                    RoomPanel.updateRoomUsers(users)
+                })
+        
+                socket.on("add user in room", (users) => {
+                    users = JSON.parse(users)
+        
+                    RoomPanel.addUser(users)
+                })
 
-            socket.on("user in room", (users) => {
-                users = JSON.parse(users)
-    
-                RoomPanel.updateRoomUsers(users)
-            })
-    
-            socket.on("add user in room", (users) => {
-                users = JSON.parse(users)
-    
-                RoomPanel.addUser(users)
-            })
+                socket.on("remove user in room", (users) => {
+                    users = JSON.parse(users)
+        
+                    RoomPanel.removeUser(users)
+                })
 
-            socket.on("remove user in room", (users) => {
-                users = JSON.parse(users)
-    
-                RoomPanel.removeUser(users)
-            })
+                socket.on("start game", (users) => {
+                    console.log("start game")
+                    UI.toGame()
+                    users = JSON.parse(users)
+                    console.log("users:")
+                    console.log(users)
+                    console.log("gamePageInit")
+                    GAME.gamePageInit(users)//<< working
+                })
 
-            socket.on("start game", (users) => {
-                console.log("start game")
-                UI.toGame()
-                users = JSON.parse(users)
-                console.log("users:")
-                console.log(users)
-                console.log("gamePageInit")
-                GAME.gamePageInit(users)//<< working
-            })
+                socket.on("new player info", (x, y, player_id) => {
+                    GAME.updateOtherPlayers(x, y, player_id)//<< working
+                })
 
-            socket.on("new player info", (x, y, player_id) => {
-                GAME.updateOtherPlayers(x, y, player_id)//<< working
-            })
+                socket.on("new bullet info", (x, y, mouse_x, mouse_y, id) => {
+                    GAME.addOtherBullets(x, y, mouse_x, mouse_y, id)//<< working
+                })
 
-            socket.on("new bullet info", (x, y, mouse_x, mouse_y, id) => {
-                GAME.addOtherBullets(x, y, mouse_x, mouse_y, id)//<< working
-            })
+                socket.on("new hp info", (player_id, hp) => {
+                    GAME.updateOtherHp(player_id, hp)
+                })
 
-            socket.on("new hp info", (player_id, hp) => {
-                GAME.updateOtherHp(player_id, hp)
-            })
+                socket.on("new kills info", (player_id) => {
+                    GAME.updateOtherKills(player_id)
+                })
 
-            socket.on("new kills info", (player_id) => {
-                GAME.updateOtherKills(player_id)
+                socket.on("show end page", (playerScores) => {
+                    UI.toEndPage()
+                    playerScores = JSON.parse(playerScores)
+                    console.log(playerScores);
+                    $("#final-kills").text(playerScores[Authentication.getUser().username])
+                })
+            },  ()=>{
+                console.log("join room fail")
             })
-
-            socket.on("show end page", (playerScores) => {
-                UI.toEndPage()
-                playerScores = JSON.parse(playerScores)
-                console.log(playerScores);
-                $("#final-kills").text(playerScores[Authentication.getUser().username])
-            })
+        }else{
+            console.log(socket)
+            console.log(socket.connected)
         }
     }
 
     const leaveRoom = function(room){
         if(socket && socket.connected) {
+
             console.log("leaving room")
-            socket.emit("leave room", room)
-            socket_room = null
 
-            socket.removeListener("user in room", (users) => {
-                users = JSON.parse(users)
-    
-                RoomPanel.updateRoomUsers(users)
-            })
-    
-            socket.removeListener("add user in room", (users) => {
-                users = JSON.parse(users)
-    
-                RoomPanel.addUser(users)
-            })
+            Authentication.leaveRoom(room,  ()=>{
 
-            socket.removeListener("remove user in room", (users) => {
-                users = JSON.parse(users)
-    
-                RoomPanel.removeUser(users)
+                socket.emit("leave room", room)
+                socket_room = null
+                
+                socket.removeListener("user in room", (users) => {
+                    users = JSON.parse(users)
+                    
+                    RoomPanel.updateRoomUsers(users)
+                })
+                
+                socket.removeListener("add user in room", (users) => {
+                    users = JSON.parse(users)
+                    
+                    RoomPanel.addUser(users)
+                })
+                
+                socket.removeListener("remove user in room", (users) => {
+                    users = JSON.parse(users)
+                    
+                    RoomPanel.removeUser(users)
+                })
+            },  ()=>{
+                console.log("leave room fail")
             })
         }
+    }
+
+    const returnToRoom =  function  ()  {
+        const room = Authentication.getRoom()
+        socket.emit("resume room session", room)
     }
 
     const inRoom = function(){
@@ -234,5 +278,5 @@ const Socket = (function() {
     }
 
 
-    return { getSocket, connect, disconnect, joinRoom, leaveRoom, createRoom, inRoom,  requestStartGame, update_player_pos, add_new_bullet, update_player_hp, update_player_kills, endGame};
+    return { getSocket, connect, disconnect, joinRoom, leaveRoom, createRoom, inRoom,  requestStartGame, update_player_pos, add_new_bullet, update_player_hp, update_player_kills, endGame, getRoomInfo, returnToRoom};
 })();

@@ -8,6 +8,11 @@ const Authentication = (function() {
         return user;
     }
 
+    const getRoom = function()  {
+        return user.room
+    }
+
+
     // This function sends a sign-in request to the server
     // * `username`  - The username for the sign-in
     // * `password`  - The password of the user
@@ -72,7 +77,9 @@ const Authentication = (function() {
             .then((res) => res.json() )
             .then((json) => {
                 if(json.status == "success"){
+
                     user = json.user
+                    console.log(user)
                     onSuccess(json.success)
                 }else if(onError){
                     onError(json.error)
@@ -116,7 +123,7 @@ const Authentication = (function() {
 
     const joinRoom = function(room_name, onSuccess, onError){
 
-        const json = JSON.stringify({username: Authentication.getUser().username, room_name})
+        const json = JSON.stringify({room_name})
 
         fetch("/joinRoom", {
             method: 'post',
@@ -127,7 +134,7 @@ const Authentication = (function() {
             .then((json) => {
                 console.log(json)
                 if(json.status == "success"){
-                    room = json.user.room
+                    room = json.room
                     onSuccess()
                 }else if(onError){
                     onError(json.error)
@@ -135,14 +142,14 @@ const Authentication = (function() {
                 
             })
             .catch((err) => {
-                console.log("Error!");
+                console.log(err);
         });
     }
 
     const leaveRoom = function(room_name, onSuccess, onError){
 
 
-        const json = JSON.stringify({username: Authentication.getUser().username, room_name})
+        const json = JSON.stringify( {room_name})
 
         fetch("/leaveRoom", {
             method: 'post',
@@ -165,5 +172,5 @@ const Authentication = (function() {
         });
     }
 
-    return { getUser, signin, validate, signout };
+    return { getUser, signin, validate, signout , joinRoom,  leaveRoom, getRoom};
 })();

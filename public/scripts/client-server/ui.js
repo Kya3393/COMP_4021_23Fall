@@ -372,9 +372,16 @@ const RoomPanel= (function() {
         if (userDiv.length > 0) userDiv.remove();
     };
     
+    const update = function(){
+        const room_name = Authentication.getRoom()
+        console.log("current room :  ")
+        console.log(room_name)
+        Socket.getRoomInfo(room_name)
+    }
 
     // This function shows the create room interface
     const show = function() {
+        $("#menu-overlay").show()
         $("#room-panel").show()
         $("#game-menu").show()
     };
@@ -386,7 +393,7 @@ const RoomPanel= (function() {
     };
 
 
-    return { initialize, show, hide, updateRoomName, updateRoomUsers, addUser, removeUser };
+    return { initialize, show, hide, updateRoomName, updateRoomUsers, addUser, removeUser, update };
 })();
 
 const UI = (function() {
@@ -466,8 +473,11 @@ const UI = (function() {
             component.hide();
         }
 
-        RoomPanel.show(room)
+        console.log("updating room info")
+        RoomPanel.update()
+
         console.log("displaying room panel")
+        RoomPanel.show(room)
     }
 
     const toGame = function(){

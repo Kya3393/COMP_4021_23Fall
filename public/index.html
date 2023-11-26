@@ -149,17 +149,30 @@
         Authentication.validate(
             () => {
                 console.log("signed in")
-                if(Socket.inRoom()){
-                    UI.roomPanel()
-                }
-                UI.mainMenu()
+                
+                initializeSequel(()=>
+                {
+                    if(Authentication.getRoom()){
+                        console.log("getting to room")
+                        Socket.joinRoom(Authentication.getRoom())
+                        UI.roomPanel(Authentication.getRoom())
+                    }else{
+                        console.log("getting in main menu")
+                        UI.mainMenu()
+                }})
 
-                Socket.connect();
             },
             () => { 
                 UI.startingScreen()
             }
         );
+
+        const initializeSequel = function(callbackfn){
+
+            Socket.connect();
+
+            callbackfn()
+        }
 
         /* Get the canvas and 2D context */
         const cv = $("canvas").get(0);

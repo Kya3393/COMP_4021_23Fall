@@ -164,23 +164,49 @@ app.get("/validate", (req, res) => {
 
 // });
 
-// app.post("/joinRoom", (req, res)  => {
-//         //
-//     // B. Getting req.session.user
-//     //
+app.post("/joinRoom", (req, res)  => {
+        //
+    // B. Getting req.session.user
+    //
+    const {room_name} = req.body
 
-//     if(!req.session.user){
-//         res.json({ status: "error", error: "Please login" });
-//         return
-//     }
+    if(!req.session.user){
+        res.json({ status: "error", error: "Please login" });
+        return
+    }
     
+    req.session.user.room = room_name
 
-//     //
-//     // D. Sending a success response with the user account
-//     //
-//     res.json({ status: "success", user: req.session.user })
+    //
+    // D. Sending a success response with the user account
+    //
+    res.json({ status: "success", room: room_name })
  
-// })
+})
+
+app.post("/leaveRoom", (req, res)  => {
+    //
+    // B. Getting req.session.user
+    //
+    const {room_name} = req.body
+
+    if(!req.session.user){
+        res.json({ status: "error", error: "Please login" });
+        return
+    }
+
+    if(room_name  !== req.session.user.room){
+        res.json({ status: "error", error: `User is not in room ${room_name}` });
+        return
+    }
+
+    req.session.user.room = room_name
+    //
+    // D. Sending a success response with the user account
+    //
+    res.json({ status: "success"})
+
+})
 
 // Handle the /signout endpoint
 app.get("/signout", (req, res) => {
@@ -253,6 +279,14 @@ io.on("connection", (socket) => {
         //     fs.writeFileSync("data/chatroom.json", JSON.stringify(chatroom))
         //     io.emit("add message", JSON.stringify(message))
         // })
+        socket.on("get room info", (roomName )=> {
+            console.log("retriving room info :")
+            console.log(roomName)
+            if(roomName){
+                socket.emit("room info", {name: JSON.stringify(roomName), users: JSON.stringify(gameRoomList[roomName])})
+            }
+        })
+
         socket.on("get gameroom list", () => {
             socket.emit("room list", JSON.stringify(gameRoomList))
         })
@@ -260,6 +294,10 @@ io.on("connection", (socket) => {
         socket.on("create room", (roomName) => {
             gameRoomList[roomName] = {}
             io.emit("room list", JSON.stringify(gameRoomList))
+        })
+
+        socket.on("resume room session", (roomName) => {
+            socket.join(roomName)
         })
 
         socket.on("join room", (roomName) => {  
@@ -270,17 +308,28 @@ io.on("connection", (socket) => {
 
                 
                 //add user to the room info in server
+
                 const  username = socket.request.session.user.username
-                gameRoomList[roomName][username]  = socket.request.session.user.name
+
+                if(username in gameRoomList[roomName]){
+                    gameRoomList[roomName][username]  = socket.request.session.user.name
+                }else{
+                    gameRoomList[roomName][username]  = socket.request.session.user.name
+                    //tell everyone 
+                    console.log("emit add user in room")
+                    socket.to(roomName).emit("add user in room", JSON.stringify(socket.request.session.user))
+                }
+
                 
                 //update the room info in ui
+                console.log("gathering room info :")
+                console.log(roomName)
                 socket.emit("room info", {name: JSON.stringify(roomName), users: JSON.stringify(gameRoomList[roomName])})
                 
                 //set requesting user room to room name
                 socket.request.session.user.room  = roomName
 
-                //tell everyone 
-                socket.to(roomName).emit("add user in room", JSON.stringify(socket.request.session.user))
+                
                 io.emit("room list", JSON.stringify(gameRoomList))
             }else{
                 console.log("room does not exist")
@@ -318,11 +367,11 @@ io.on("connection", (socket) => {
         })
 
         socket.on("request start game", (room) => {
-            console.log("==========")
-            console.log(room)
-            console.log(gameRoomList[room])
-            //console.log(gameRoomList[room][0])
-            console.log("==========")
+            // console.log("==========")
+            // console.log(room)
+            // console.log(gameRoomList[room])
+            // console.log(gameRoomList[room][0])
+            // console.log("==========")
 
             
 
