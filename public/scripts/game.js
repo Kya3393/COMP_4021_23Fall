@@ -11,6 +11,13 @@ const GAME = (function() {
     let bullet_amount = 30;
     let weapons =[];//<< Put at server side?
 
+
+    const sounds = {
+        reload: new Audio("Assets/sfx/reload.mp3"),
+        pistol: new Audio("Assets/sfx/pistol_shot.mp3"),
+        pistol_no_ammo: new Audio("Assets/sfx/pistol_no_ammo.mp3"),
+    }
+
     const gamePageInit = function(users){
         $("counter").show();
         cv = $("canvas").get(0);
@@ -41,72 +48,107 @@ const GAME = (function() {
             if(bullet_amount > 0){
                 const new_bullet = Bullet(ctx, x, y, mouse_pos.x, mouse_pos.y,self.getId());
                 Socket.add_new_bullet(x, y, mouse_pos.x, mouse_pos.y,self.getId());// emit
+                
                 bullets.push(new_bullet);
                 bullet_amount--;
                 $("#bullet-remaining").text(bullet_amount);
             }else{
+                sounds.pistol_no_ammo.currentTime=0
+                sounds.pistol_no_ammo.play()
                 $("#bullet-remaining").text("Press R to reload");
             }
         });
 
-        /* Handle the keydown of arrow keys and spacebar */
-        $(document).on("keydown", function(event) {
-        /* Handle the key down */
-        // W key
-        if (event.keyCode == 87) {
-            self.move(2); // Move up
-        }
-        // S key
-        if (event.keyCode == 83) {
-            self.move(4); // Move down
-        }
-        // A key
-        if (event.keyCode == 65) {
-            self.move(1); // Move left
-        }
-        // D key
-        if (event.keyCode == 68) {
-            self.move(3); // Move right
-        }
-        // R key reload bullet
-        if (event.keyCode == 82) {
-            if(bullet_amount < 30){
-                bullet_amount = 30;
-                $("#bullet-remaining").text(bullet_amount);
+        var map = {}; // You could also use an array
+        var last_dir = 0;
+        onkeydown = onkeyup = function(e){
+            map[e.key] = e.type == 'keydown';
+
+            console.log(map)
+            /* insert conditional here */
+            switch(true){
+                //
+                case !map['w'] && map['a'] && map['s'] && !map['d']: self.move(5);  last_dir = 5;break;
+
+                case map['w'] && map['a'] && !map['s'] && !map['d']: self.move(6);  last_dir = 6;break;
+                
+                case map['w'] && !map['a'] && !map['s'] && map['d']: self.move(7);  last_dir = 7;break;
+                
+                case !map['w'] && !map['a'] && map['s'] && map['d']: self.move(8);  last_dir = 8;break;
+
+                // left (a)
+                case !map['w'] && map['a'] && !map['s'] && !map['d']: self.move(1);  last_dir = 1;break;
+                // up (w)
+                case map['w'] && !map['a'] && !map['s'] && !map['d']: self.move(2);  last_dir = 2;break;
+                // right (d)
+                case !map['w'] && !map['a'] && !map['s'] && map['d']: self.move(3);  last_dir = 3;break;
+                // down (s)
+                case !map['w'] && !map['a'] && map['s'] && !map['d']: self.move(4);  last_dir = 4;break;
+                
+                case !map['w'] && !map['a'] && !map['s'] && !map['d']: self.stop(last_dir); map = {}; last_dir = 0;break;
             }
+            
         }
 
-        // // spacebar key ( cheat )
-        // if(event.keyCode == 32){
-        //     player.speedUp();
+        // /* Handle the keydown of arrow keys and spacebar */
+        // $(document).on("keydown", function(event) {
+        // /* Handle the key down */
+        // // W key
+        // if (event.keyCode == 87) {
+        //     self.move(2); // Move up
+        // }
+        // // S key
+        // if (event.keyCode == 83) {
+        //     self.move(4); // Move down
+        // }
+        // // A key
+        // if (event.keyCode == 65) {
+        //     self.move(1); // Move left
+        // }
+        // // D key
+        // if (event.keyCode == 68) {
+        //     self.move(3); // Move right
+        // }
+        // // R key reload bullet
+        // if (event.keyCode == 82) {
+        //     sounds.reload.play()
+        //     if(bullet_amount < 30){
+        //         bullet_amount = 30;
+        //         $("#bullet-remaining").text(bullet_amount);
+        //     }
         // }
 
-        });
+        // // // spacebar key ( cheat )
+        // // if(event.keyCode == 32){
+        // //     player.speedUp();
+        // // }
 
-        /* Handle the keyup of arrow keys and spacebar */
-        $(document).on("keyup", function(event) {
-        /* Handle the key up */
-        // W key
-        if (event.keyCode == 87) {
-            self.stop(2); // Move up
-        }
-        // S key
-        if (event.keyCode == 83) {
-            self.stop(4); // Move down
-        }
-        // A key
-        if (event.keyCode == 65) {
-            self.stop(1); // Move left
-        }
-        // D key
-        if (event.keyCode == 68) {
-            self.stop(3); // Move right
-        }
-        // // spacebar key ( cheat )
-        // if(event.keyCode == 32){
-        //     player.slowDown();
+        // });
+
+        // /* Handle the keyup of arrow keys and spacebar */
+        // $(document).on("keyup", function(event) {
+        // /* Handle the key up */
+        // // W key
+        // if (event.keyCode == 87) {
+        //     self.stop(2); // Move up
         // }
-        });
+        // // S key
+        // if (event.keyCode == 83) {
+        //     self.stop(4); // Move down
+        // }
+        // // A key
+        // if (event.keyCode == 65) {
+        //     self.stop(1); // Move left
+        // }
+        // // D key
+        // if (event.keyCode == 68) {
+        //     self.stop(3); // Move right
+        // }
+        // // // spacebar key ( cheat )
+        // // if(event.keyCode == 32){
+        // //     player.slowDown();
+        // // }
+        // });
 
         /* Start the game */
         requestAnimationFrame(doFrame);

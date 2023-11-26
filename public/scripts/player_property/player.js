@@ -47,17 +47,33 @@ const Player = function(ctx, x, y, gameArea, id) {
     // - `2` - moving up
     // - `3` - moving to the right
     // - `4` - moving down
+
+    //  Might change to this?
+    // - `0` - not moving
+    // - `1` - moving to the left
+    // - `2` - moving up
+    // - `3` - moving to the right
+    // - `4` - moving down
+    // - `5` - moving down left
+    // - `6` - moving up left
+    // - `7` - moving up right
+    // - `8` - moving down right
+
     let direction = 0;
 
     // This function sets the player's moving direction.
     // - `dir` - the moving direction (1: Left, 2: Up, 3: Right, 4: Down)
     const move = function(dir) {
-        if (dir >= 1 && dir <= 4 && dir != direction) {
+        if (dir >= 1 && dir <= 8 && dir != direction) {
             switch (dir) {
                 case 1: sprite.setSequence(sequences.moveLeft); break;
                 case 2: sprite.setSequence(sequences.moveUp); break;
                 case 3: sprite.setSequence(sequences.moveRight); break;
                 case 4: sprite.setSequence(sequences.moveDown); break;
+                case 5: sprite.setSequence(sequences.moveLeft); break;
+                case 6: sprite.setSequence(sequences.moveUp); break;
+                case 7: sprite.setSequence(sequences.moveUp); break;
+                case 8: sprite.setSequence(sequences.moveRight); break;
             }
             direction = dir;
         }
@@ -72,6 +88,10 @@ const Player = function(ctx, x, y, gameArea, id) {
                 case 2: sprite.setSequence(sequences.idleUp); break;
                 case 3: sprite.setSequence(sequences.idleRight); break;
                 case 4: sprite.setSequence(sequences.idleDown); break;
+                case 5: sprite.setSequence(sequences.idleLeft); break;
+                case 6: sprite.setSequence(sequences.idleUp); break;
+                case 7: sprite.setSequence(sequences.idleUp); break;
+                case 8: sprite.setSequence(sequences.idleRight); break;
             }
             direction = 0;
         }
@@ -94,12 +114,17 @@ const Player = function(ctx, x, y, gameArea, id) {
         if (direction != 0) {
             let { x, y } = sprite.getXY();
 
+            console.log(direction)
             /* Move the player */
             switch (direction) {
                 case 1: x -= speed / 60; break;
                 case 2: y -= speed / 60; break;
                 case 3: x += speed / 60; break;
                 case 4: y += speed / 60; break;
+                case 5: x -= speed / 60; y += speed / 60; break;
+                case 6: y -= speed / 60; x -= speed / 60; break;
+                case 7: x += speed / 60; y -= speed / 60; break;
+                case 8: y += speed / 60; x += speed / 60; break;
             }
 
             /* Set the new position if it is within the game area */
