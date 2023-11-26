@@ -43,7 +43,7 @@ const Socket = (function() {
         })
 
         socket.on("room info", ({name, users}) =>{
-
+            
 
             name = JSON.parse(name)
             users = JSON.parse(users)
@@ -244,6 +244,7 @@ const Socket = (function() {
     }
 
     const returnToRoom =  function  ()  {
+
         const room = Authentication.getRoom()
         socket.emit("resume room session", room)
     }

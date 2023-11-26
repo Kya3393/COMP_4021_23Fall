@@ -281,8 +281,9 @@ io.on("connection", (socket) => {
         // })
         socket.on("get room info", (roomName )=> {
             console.log("retriving room info :")
-            console.log(roomName)
-            if(roomName){
+            console.log(roomName)   
+
+            if(roomName && roomName in gameRoomList){
                 socket.emit("room info", {name: JSON.stringify(roomName), users: JSON.stringify(gameRoomList[roomName])})
             }
         })
