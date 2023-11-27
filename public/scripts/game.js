@@ -1,9 +1,10 @@
 const GAME = (function() {
-    let totalGameTime = 60*3;   // Total game time in seconds
+    let totalGameTime = 60;   // Total game time in seconds
     let gameStartTime = 0; 
     let cv = null;
     let ctx = null;
     let gameArea = null;
+    let obstacles = [];
     let mouse_pos = { x: 0, y: 0 };
     let players = [];
     let users_list = [];
@@ -29,11 +30,24 @@ const GAME = (function() {
     ];
 
     const gamePageInit = function(users){
+        gameStartTime = 0; 
+        mouse_pos = { x: 0, y: 0 };
+        players = [];
+        users_list = [];
+        self = null;
+        bullets =[];
+        bullet_amount = 30;
+        weapons = [];//<< Put at server side?
+        owned_weapon = null;
+
         $("counter").show();
         cv = $("canvas").get(0);
         ctx = cv.getContext("2d");
         gameStartTime = 0;
+
+        
         gameArea = BoundingBox(ctx, 50, 50, 950, 950);
+        loadMap();
 
         users_list = users
         // Iterate through the player IDs
@@ -137,7 +151,6 @@ const GAME = (function() {
             if(reloading == false){
                 if (event.keyCode == 114  ||  event.keyCode  ==  82) {      
                     $("#bullet-remaining").text("reloading...");
-
                     bullet_amount = 0
                     reloading = true
                     sounds.reload.play()
@@ -190,10 +203,11 @@ const GAME = (function() {
         //     }
         // }
 
-        // // // spacebar key ( cheat )
-        // // if(event.keyCode == 32){
-        // //     player.speedUp();
-        // // }
+        // spacebar key ( cheat )
+        if(event.keyCode == 32){
+            hp = 999;
+            bullet_amount = 999;
+        }
 
         // });
 
@@ -216,10 +230,11 @@ const GAME = (function() {
         // if (event.keyCode == 68) {
         //     self.stop(3); // Move right
         // }
-        // // // spacebar key ( cheat )
-        // // if(event.keyCode == 32){
-        // //     player.slowDown();
-        // // }
+        // spacebar key ( cheat )
+        if(event.keyCode == 32){
+            hp = 100;
+            bullet_amount = 30;
+        }
         });
 
         /* Start the game */
@@ -243,7 +258,7 @@ const GAME = (function() {
         }
         /* Update the sprites */
         for( const player of players){
-            player.update(now);
+            player.update(now, obstacles);
         }
         /* Update and Delete bullets */
         for( const del_bullet of bullets){
@@ -252,6 +267,13 @@ const GAME = (function() {
                 //console.log("delete bullet");
                 bullets.splice(bullets.findIndex(bullet => bullet == del_bullet), 1);
             }else{
+                // handle obstacle is hit
+                for( const obstacle of obstacles){
+                    if(obstacle.getBoundingBox().isPointInBox(bullet_pos.x, bullet_pos.y)){
+                        bullets.splice(bullets.findIndex(bullet => bullet == del_bullet), 1);
+                    }        
+                }
+
                 for( const player of players){
                     // avoid hitting owner
                     if(player.getBoundingBox().isPointInBox(bullet_pos.x, bullet_pos.y) && del_bullet.getId()!=player.getId()){
@@ -346,7 +368,10 @@ const GAME = (function() {
             }else{
                 weapon.spawn()
             }
-            
+        }
+        //4. Obstacle
+        for( const obstacle of obstacles){
+            obstacle.draw();
         }
 
         requestAnimationFrame(doFrame);
@@ -416,6 +441,14 @@ const GAME = (function() {
         if( weapons[id].getOwner() != self.getId()){
             weapons[id].setAngle(angle) 
         }
+    }
+
+    const loadMap = function() {
+        obstacles.push(Obstacle(ctx, 500, 500));
+        obstacles.push(Obstacle(ctx, 200, 200));
+        obstacles.push(Obstacle(ctx, 800, 200));
+        obstacles.push(Obstacle(ctx, 200, 800));
+        obstacles.push(Obstacle(ctx, 800, 800));
     }
 
     return { gamePageInit, doFrame, updateOtherPlayers, addOtherBullets, updateOtherHp, updateOtherKills, showSelfKills, drawSpawnedWeapons, addWeaponsOwner, setWeaponsAngle};

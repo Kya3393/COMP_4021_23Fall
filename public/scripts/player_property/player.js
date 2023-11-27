@@ -110,7 +110,7 @@ const Player = function(ctx, x, y, gameArea, id) {
 
     // This function updates the player depending on his movement.
     // - `time` - The timestamp when this function is called
-    const update = function(time) {
+    const update = function(time, obstacles) {
         /* Update the player if the player is moving */
         if (direction != 0) {
             let { x, y } = sprite.getXY();
@@ -129,7 +129,14 @@ const Player = function(ctx, x, y, gameArea, id) {
             }
 
             /* Set the new position if it is within the game area */
-            if (gameArea.isPointInBox(x, y)){
+            let Blocked = false
+            for( obstacle of obstacles){
+                if(obstacle.getBoundingBox().isPointInBox(x, y)){
+                    Blocked = true
+                    break
+                }
+            }
+            if (gameArea.isPointInBox(x, y) && !Blocked){
                 //console.log("Updating pos of :" + player_id)
                 Socket.update_player_pos(x, y, player_id)
                 sprite.setXY(x, y);
