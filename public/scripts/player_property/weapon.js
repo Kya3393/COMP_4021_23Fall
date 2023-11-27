@@ -116,23 +116,31 @@ const Weapon = function(ctx, x, y, type, stats, id) {
                 // Draw shotgun image
                 ctx.drawImage(shotgunImage, 0, 0, 27, 9, 0, 0, 27*2, 9*2);
             }
+        }else{
+            spawn()
         }
-        else{
-            if (type == "pistol") {
-                // Draw pistol image
-                ctx.drawImage(pistolImage, 0, 0, 27, 16, x, y, 27*2, 16*2);
-            } else if (type == "rifle") {
-                // Draw rifle image
-                ctx.drawImage(rifleImage, 0, 0, 26, 7, x, y, 26*2, 7*2);
-            } else if (type == "shotgun") {
-                // Draw shotgun image
-                ctx.drawImage(shotgunImage, 0, 0, 27, 9, x, y, 27*2, 9*2);
-            }
-        }
-
         /* Restore saved settings */
         ctx.restore();
     };
+
+    const spawn = function(){
+    
+        if (type == "pistol") {
+            // Draw pistol image
+            ctx.drawImage(pistolImage, 0, 0, 27, 16, spawn_x, spawn_y, 27*2, 16*2);
+        } else if (type == "rifle") {
+            // Draw rifle image
+            ctx.drawImage(rifleImage, 0, 0, 26, 7, spawn_x, spawn_y, 26*2, 7*2);
+        } else if (type == "shotgun") {
+            // Draw shotgun image
+            ctx.drawImage(shotgunImage, 0, 0, 27, 9, spawn_x, spawn_y, 27*2, 9*2);
+        }
+    }
+
+    const reset = function (){
+        x = spawn_x
+        y = spawn_y
+    }
 
     // The methods are returned as an object here.
     return {
@@ -148,5 +156,7 @@ const Weapon = function(ctx, x, y, type, stats, id) {
         update: update,
         randomize: randomize,
         draw: draw,
+        spawn: spawn,
+        reset: reset,
     };
 };

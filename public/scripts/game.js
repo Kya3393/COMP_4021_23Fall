@@ -10,7 +10,7 @@ const GAME = (function() {
     let self = null;
     let bullets =[];
     let bullet_amount = 30;
-    let weapons =[];//<< Put at server side?
+    let weapons = [];//<< Put at server side?
     let owned_weapon = null;
     let reload_timeout = 2000
 
@@ -50,7 +50,6 @@ const GAME = (function() {
         
         /* Randomly spawn weapons on ground */
         Socket.spawnWeapon();
-        drawSpawnedWeapons();
         //weapons.push(Weapon(ctx, 500, 500));
         //weapons[0].randomize(gameArea);
 
@@ -67,7 +66,7 @@ const GAME = (function() {
             //let{x, y} = self.getXY();
             if(bullet_amount > 0 && owned_weapon != null){
                 let {x,y} = owned_weapon.getXY()
-                console.log(owned_weapon.getStats())
+                //console.log(owned_weapon.getStats())
                 if (owned_weapon.getType() != "shotgun"){
                     const new_bullet = Bullet(ctx, x, y, mouse_pos.x, mouse_pos.y,self.getId(), owned_weapon.getStats());
 
@@ -266,6 +265,13 @@ const GAME = (function() {
                                 //killer.increaseKill();
                                 Socket.update_player_kills(killer.getId(),killer.getKills());// emit for server record
 
+                                // respawn
+                                if(owned_weapon != null){
+                                    owned_weapon.setOwner(null)
+                                    Socket.update_weapon_owner(owned_weapon.getId(), null)// emit
+                                    owned_weapon = null;
+                                }
+                                
                                 Object.values(users_list).forEach((playerId, index) => {
                                     if( playerId == self.getId()){
                                         // Retrieve the corresponding spawn position based on the index
@@ -274,8 +280,8 @@ const GAME = (function() {
                                         Socket.update_player_pos(spawnPosition.x, spawnPosition.y, playerId)
                                     } 
                                 });
+                                self.setHp(100);
 
-                                self.setHp(100);// respawn
                                 $("#hp-remaining").text(self.getHp());
                                 Socket.update_player_hp(self.getId(), self.getHp());// emit
                             }
@@ -306,6 +312,9 @@ const GAME = (function() {
             if(weapon.getOwner() !=null){
                 let {x,y} = players.find(player => player.getId() == weapon.getOwner()).getXY();
                 weapon.setXY(x+20,y)
+            }else{
+                if(weapon.getId()==0)console.log("reset")
+                weapon.reset()
             }
         }
 
@@ -329,7 +338,12 @@ const GAME = (function() {
         }
         //3. Weapons
         for( const weapon of weapons){
-            weapon.draw(mouse_pos.x, mouse_pos.y, self.getId());
+            if( weapon.getOwner() != null){
+                weapon.draw(mouse_pos.x, mouse_pos.y, self.getId());
+            }else{
+                weapon.spawn()
+            }
+            
         }
 
         requestAnimationFrame(doFrame);
@@ -369,19 +383,30 @@ const GAME = (function() {
     }
 
     const drawSpawnedWeapons = function(Weapons){
-        for( var key in Weapons){
+        if( weapons.length == 0){
+            for( var key in Weapons){
             weapons.push(Weapon(ctx, Weapons[key].Pos.x, Weapons[key].Pos.y, Weapons[key].Type, Weapons[key].Stats, key ));
-            //console.log(key)
+            }
+            // for( weapon of weapons){
+            //     weapon.spawn()
+            // }
+            console.log("added to list")
+            console.log(weapons)
         }
-        console.log("added to list")
-        console.log(weapons)
+        
     }
 
     const addWeaponsOwner = function(id, owner) {
         if( owner != self.getId()){
             console.log(id +": " + owner)
-            weapons[id].setOwner(owner) 
+            if(weapons[id].getOwner()==null){
+                weapons[id].setOwner(owner) 
+            }else if(owner == null){
+                weapons[id].setOwner(owner) 
+            }
         }
+        console.log("added owner")
+        console.log(weapons)
     }
 
     const setWeaponsAngle = function(id, angle) {
