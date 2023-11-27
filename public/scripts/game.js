@@ -1,5 +1,5 @@
 const GAME = (function() {
-    let totalGameTime = 60;   // Total game time in seconds
+    let totalGameTime = 10;   // Total game time in seconds
     let gameStartTime = 0; 
     let cv = null;
     let ctx = null;

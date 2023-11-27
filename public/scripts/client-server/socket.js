@@ -200,10 +200,8 @@ const Socket = (function() {
                 })
 
                 socket.on("show end page", (playerScores) => {
-                    UI.toEndPage()
                     playerScores = JSON.parse(playerScores)
-                    console.log(playerScores);
-                    $("#final-kills").text(playerScores[Authentication.getUser().username])
+                    UI.toEndPage(playerScores)
                 })
 
                 socket.on("draw weapon", (initialWeaponInfo) => {

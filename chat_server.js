@@ -41,9 +41,9 @@ function updatePlayerKills(playerId, kills) {
 
 const weaponList = {};
 const weaponTypes = {
-    pistol:  { range: 500, speed: 2, rate: 5, dmg: 20 },
+    pistol:  { range: 600, speed: 3, rate: 5, dmg: 20 },
     rifle:    { range: 1000, speed: 5, rate: 10, dmg: 40 },
-    shotgun: { range: 200, speed: 2, rate: 1, dmg: 10 }
+    shotgun: { range: 400, speed: 2, rate: 1, dmg: 30 }
 };
 function initializeWeapons() {
     const spawnPositions = [

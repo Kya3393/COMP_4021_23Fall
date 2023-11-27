@@ -520,9 +520,33 @@ const UI = (function() {
         $("#counter").hide();
     }
 
-    const toEndPage = function(){
+    const toEndPage = function(playerScores){
         $("#counter").hide();
         $("#game-over").show();
+        console.log(playerScores);
+        $("#final-kills").text(playerScores[Authentication.getUser().username])
+
+        const rankingList =  $("#ranking-list")
+        // Convert the playerKills object into an array of [playerId, kills] pairs
+        const playerKillsArray = Object.entries(playerScores);
+
+        // Sort the array based on kills in descending order
+        playerKillsArray.sort((a, b) => b[1] - a[1]);
+
+        // Clear the existing content of the ranking list
+        rankingList.innerHTML = '';
+
+        // Iterate over the sorted array and update the ranking list
+        for (let i = 0; i < playerKillsArray.length; i++) {
+            const [playerId, kills] = playerKillsArray[i];
+            const rank = i + 1;
+
+
+            textContent = `Rank ${rank}: Player ${playerId} - Kills: ${kills}`;
+
+            // Append the list item to the ranking list
+            rankingList.append( $("<li>" + textContent + "</li>") );
+        }
     }
 
 
