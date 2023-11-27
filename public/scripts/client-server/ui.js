@@ -538,13 +538,14 @@ const UI = (function() {
 
         // let rankings = ""
         $('.temp').remove()
-        let  text = document.createElementNS('http://www.w3.org/2000/svg', 'text')
         
 
         // Iterate over the sorted array and update the ranking list
         for (let i = 0; i < playerKillsArray.length; i++) {
             const [playerId, kills] = playerKillsArray[i];
             const rank = i + 1;
+
+            let  text = document.createElementNS('http://www.w3.org/2000/svg', 'text')
 
             let  rank_record = document.createTextNode(`Rank ${rank}: Player ${playerId} - Kills: ${kills}`)
             text.appendChild(rank_record)
