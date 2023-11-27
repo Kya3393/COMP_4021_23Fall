@@ -11,7 +11,7 @@ const Player = function(ctx, x, y, gameArea, id) {
     const sequences = {
         /* Idling sprite sequences for facing different directions */
         idleLeft:  { x: 0, y: 48, width: 48, height: 48, count: 4, timing: 2000, loop: true },
-        idleRight: { x: 0, y: 144, width: 24, height: 25, count: 3, timing: 2000, loop: true },
+        idleRight: { x: 0, y: 144, width: 48, height: 48, count: 4, timing: 2000, loop: true },
         // idleUp:    { x: 0, y: 50, width: 24, height: 25, count: 1, timing: 2000, loop: false },
         // idleDown:  { x: 0, y:  0, width: 24, height: 25, count: 3, timing: 2000, loop: false },
 
@@ -36,8 +36,8 @@ const Player = function(ctx, x, y, gameArea, id) {
     const sprite = Sprite(ctx, x, y);
 
     // The sprite object is configured for the player sprite here.
-    sprite.setSequence(sequences.idleDown)
-          .setScale(1)
+    sprite.setSequence(sequences.idleLeft)
+          .setScale(2)
           .setShadowScale({ x: 0.75, y: 0.20 })
           .useSheet("./Assets/TopDown/character1.png");
 
@@ -68,12 +68,12 @@ const Player = function(ctx, x, y, gameArea, id) {
             
             switch (dir) {
                 case 1: sprite.setSequence(sequences.moveLeft); break;
-                case 2: sprite.setSequence(sequences.moveUp); break;
+                case 2: sprite.setSequence(sequences.moveLeft); break;
                 case 3: sprite.setSequence(sequences.moveRight); break;
-                case 4: sprite.setSequence(sequences.moveDown); break;
+                case 4: sprite.setSequence(sequences.moveRight); break;
                 case 5: sprite.setSequence(sequences.moveLeft); break;
-                case 6: sprite.setSequence(sequences.moveUp); break;
-                case 7: sprite.setSequence(sequences.moveUp); break;
+                case 6: sprite.setSequence(sequences.moveLeft); break;
+                case 7: sprite.setSequence(sequences.moveRight); break;
                 case 8: sprite.setSequence(sequences.moveRight); break;
             }
             direction = dir;
@@ -86,12 +86,12 @@ const Player = function(ctx, x, y, gameArea, id) {
         if (direction == dir) {
             switch (dir) {
                 case 1: sprite.setSequence(sequences.idleLeft); break;
-                case 2: sprite.setSequence(sequences.idleUp); break;
+                case 2: sprite.setSequence(sequences.idleLeft); break;
                 case 3: sprite.setSequence(sequences.idleRight); break;
-                case 4: sprite.setSequence(sequences.idleDown); break;
+                case 4: sprite.setSequence(sequences.idleRight); break;
                 case 5: sprite.setSequence(sequences.idleLeft); break;
-                case 6: sprite.setSequence(sequences.idleUp); break;
-                case 7: sprite.setSequence(sequences.idleUp); break;
+                case 6: sprite.setSequence(sequences.idleLeft); break;
+                case 7: sprite.setSequence(sequences.idleRight); break;
                 case 8: sprite.setSequence(sequences.idleRight); break;
             }
             direction = 0;

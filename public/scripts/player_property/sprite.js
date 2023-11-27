@@ -96,10 +96,10 @@ const Sprite = function(ctx, x, y) {
         const size = getDisplaySize();
 
         /* Find the box coordinates */
-        const top = y - size.height / 2;
-        const left = x - size.width / 2;
+        const top = y - size.height / 3;
+        const left = x - size.width  / 4;
         const bottom = y + size.height / 2;
-        const right = x + size.width / 2;
+        const right = x + size.width / 4;
 
         return BoundingBox(ctx, top, left, bottom, right);
     };
@@ -141,8 +141,8 @@ const Sprite = function(ctx, x, y) {
         //
         ctx.fillStyle = "red";
         ctx.globalAlpha = 0.6;
-        ctx.fillRect(parseInt(x - size.width / 2), parseInt(y - size.height / 2),
-                     size.width, size.height);
+        ctx.fillRect(parseInt(x - size.width / 4), parseInt(y - size.height / 3),
+                      parseInt(size.width/2) , parseInt(size.height*5/6));
         ctx.imageSmoothingEnabled = false;
         //
         
