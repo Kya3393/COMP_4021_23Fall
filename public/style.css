@@ -331,3 +331,10 @@ canvas {
     color: #CCFF00;
     font-size: 80%;
 }
+text{
+    user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  -khtml-user-select: none;
+}
