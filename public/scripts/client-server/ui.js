@@ -526,7 +526,7 @@ const UI = (function() {
         console.log(playerScores);
         $("#final-kills").text(playerScores[Authentication.getUser().username])
 
-        const rankingList =  $("#ranking-list")
+        const rankingList =  $("#player-ranking")
         // Convert the playerKills object into an array of [playerId, kills] pairs
         const playerKillsArray = Object.entries(playerScores);
 
@@ -534,7 +534,8 @@ const UI = (function() {
         playerKillsArray.sort((a, b) => b[1] - a[1]);
 
         // Clear the existing content of the ranking list
-        rankingList.innerHTML = '';
+        rankingList.text("");
+        let rankings = ""
 
         // Iterate over the sorted array and update the ranking list
         for (let i = 0; i < playerKillsArray.length; i++) {
@@ -542,11 +543,13 @@ const UI = (function() {
             const rank = i + 1;
 
 
-            textContent = `Rank ${rank}: Player ${playerId} - Kills: ${kills}`;
+            rankings += `Rank ${rank}: Player ${playerId} - Kills: ${kills}\n`;
 
             // Append the list item to the ranking list
-            rankingList.append( $("<li>" + textContent + "</li>") );
+            // rankingList.append( $("<li>" + textContent + "</li>") );
         }
+        rankingList.text(rankings)
+        console.log(rankings)
     }
 
 
