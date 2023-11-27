@@ -72,7 +72,8 @@ body {
     color: var(--overlay-caption-color);
 }
 .overlay .content {
-    background-image: url("Assets/background/3d-render-handgun-grunge-background-with-blood-splatters_1048-7708.avif");
+    background: url("Assets/background/3d-render-handgun-grunge-background-with-blood-splatters_1048-7708.avif") no-repeat center center fixed;
+    background-size: cover;
 }
 .warning {
     font-weight: bold;
@@ -325,4 +326,8 @@ canvas {
 
 .room-title{
     color: var(--menu-title-color);
+}
+.hint{
+    color: #CCFF00;
+    font-size: 80%;
 }
