@@ -135,7 +135,10 @@ const GAME = (function() {
             // console.log("event : " + event.keyCode)
             
             if(reloading == false){
-                if (event.keyCode == 114  ||  event.keyCode  ==  82) {
+                if (event.keyCode == 114  ||  event.keyCode  ==  82) {      
+                    $("#bullet-remaining").text("reloading...");
+
+                    bullet_amount = 0
                     reloading = true
                     sounds.reload.play()
                     setTimeout(async function(){
