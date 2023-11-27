@@ -3,7 +3,7 @@ const Weapon = function(ctx, x, y, type, stats, id) {
     let owner_id = null;
     const spawn_x = x;
     const spawn_y = y;
-    let rotate_angle = 0;
+    let rotate_angle;
 
     // const types = {
     //     pistol:  { range: 500, speed: 2, rate: 5, dmg: 20 },
@@ -78,16 +78,19 @@ const Weapon = function(ctx, x, y, type, stats, id) {
         if(type == "shotgun")ctx.fillStyle = "green";
 
         if( owner_id != null){
-            const dx = mouse_x - x;
-            const dy = mouse_y - y;
-
-            const angle = Math.atan2(dy, dx);
-            Socket.broadcastMouseAngle(id, angle);
+            
             ctx.setTransform(1, 0, 0, 1, x, y);
             //console.log(angle)
-            ctx.rotate(angle);
+            
             if( owner_id != self){
                 ctx.rotate(rotate_angle);
+            }else{
+                const dx = mouse_x - x;
+                const dy = mouse_y - y;
+
+                const angle = Math.atan2(dy, dx);
+                Socket.broadcastMouseAngle(id, angle);
+                ctx.rotate(angle);
             }
             ctx.fillRect(0, 0, 100, 10);
         }
