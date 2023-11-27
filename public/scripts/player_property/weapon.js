@@ -108,7 +108,7 @@ const Weapon = function(ctx, x, y, type, stats, id) {
             }
             if (type == "pistol") {
                 // Draw pistol image
-                ctx.drawImage(pistolImage, 0, 0, 27, 16, 0, 0, 27*2, 16*2);
+                ctx.drawImage(pistolImage, 0, 0, 27, 16, 0, -5, 27*2, 16*2);
             } else if (type == "rifle") {
                 // Draw rifle image
                 ctx.drawImage(rifleImage, 0, 0, 26, 7, 0, 0, 26*2, 7*2);

@@ -1,6 +1,7 @@
 const GAME = (function() {
-    let totalGameTime = 10;   // Total game time in seconds
+    let totalGameTime = 60*3;   // Total game time in seconds
     let gameStartTime = 0; 
+    let forceEnd = false;
     let cv = null;
     let ctx = null;
     let gameArea = null;
@@ -20,6 +21,10 @@ const GAME = (function() {
         reload: new Audio("Assets/sfx/reload.mp3"),
         pistol: new Audio("Assets/sfx/pistol_shot.mp3"),
         pistol_no_ammo: new Audio("Assets/sfx/pistol_no_ammo.mp3"),
+        rifle: new Audio("Assets/sfx/rifle_shot.mp3"),
+        //rifle_no_ammo: new Audio("Assets/sfx/pistol_no_ammo.mp3"),
+        shotgun: new Audio("Assets/sfx/shotgun-shot.mp3"),
+        //shotgun_no_ammo: new Audio("Assets/sfx/pistol_no_ammo.mp3")
     }
 
     const spawnPositions = [
@@ -31,6 +36,7 @@ const GAME = (function() {
 
     const gamePageInit = function(users){
         gameStartTime = 0; 
+        forceEnd = false
         mouse_pos = { x: 0, y: 0 };
         players = [];
         users_list = [];
@@ -104,9 +110,21 @@ const GAME = (function() {
                     $("#bullet-remaining").text("Press R to reload");
                 }
                 
-
-                sounds.pistol.currentTime = 0
-                sounds.pistol.play()
+                switch(owned_weapon.getType()){
+                    case "pistol": 
+                        sounds.pistol.currentTime = 0
+                        sounds.pistol.play()
+                    break;
+                    case "rifle": 
+                        sounds.rifle.currentTime = 0
+                        sounds.rifle.play()
+                    break;
+                    case "shotgun": 
+                        sounds.shotgun.currentTime = 0
+                        sounds.shotgun.play()
+                    break;
+                }
+                
                 $("#bullet-remaining").text(bullet_amount);
             }else{
                 sounds.pistol_no_ammo.currentTime=0
@@ -152,7 +170,7 @@ const GAME = (function() {
             
             if(reloading == false){
                 if (event.keyCode == 114  ||  event.keyCode  ==  82) {      
-                    $("#bullet-remaining").text("reloading...");
+                    $("#bullet-remaining").text("reload...");
                     bullet_amount = 0
                     reloading = true
                     sounds.reload.play()
@@ -170,68 +188,30 @@ const GAME = (function() {
 
         /* Handle the keydown of arrow keys and spacebar */
         $(document).on("keydown", function(event) {
-        // /* Handle the key down */
-        // // W key
-        // if (event.keyCode == 87) {
-        //     self.move(2); // Move up
-        // }
-        // // S key
-        // if (event.keyCode == 83) {
-        //     self.move(4); // Move down
-        // }
-        // // A key
-        // if (event.keyCode == 65) {
-        //     self.move(1); // Move left
-        // }
-        // // D key
-        // if (event.keyCode == 68) {
-        //     self.move(3); // Move right
-        // }
-        // R key reload bullet
-        
-        // var reloading = false
-        // if(reloading === false){
-        //     if (event.keyCode == 82) {
-        //         reloading = true
-        //         sounds.reload.play()
-        //         setTimeout(async function(){
-        //             if(bullet_amount < 30){
-        //                 bullet_amount = 30;
-        //                 await $("#bullet-remaining").text(bullet_amount);
-        //             }
-        //             reloading = false
-        //         }, reload_timeout)
-                
-        //     }
-        // }
 
-        // spacebar key ( cheat )
-        if(event.keyCode == 32){
-            hp = 999;
-            bullet_amount = 999;
-        }
+            // spacebar key ( cheat )
+            if(event.keyCode == 32){
+                hp = 999;
+                bullet_amount = 999;
+            }
 
-        // });
+            // e key ( end game )
+            if(event.keyCode == 69){
+                //timeRemaining = 0;
+                Socket.endGame();
+                forceEnd = true;
+            }
 
-        // /* Handle the keyup of arrow keys and spacebar */
-        // $(document).on("keyup", function(event) {
-        // /* Handle the key up */
-        // // W key
-        // if (event.keyCode == 87) {
-        //     self.stop(2); // Move up
-        // }
-        // // S key
-        // if (event.keyCode == 83) {
-        //     self.stop(4); // Move down
-        // }
-        // // A key
-        // if (event.keyCode == 65) {
-        //     self.stop(1); // Move left
-        // }
-        // // D key
-        // if (event.keyCode == 68) {
-        //     self.stop(3); // Move right
-        // }
+            // g key ( drop weapon )
+            if(event.keyCode == 71){
+                //console.log("drop weapon")
+                dropWeapon();
+            }
+
+        });
+
+        // /* Handle the keyup and spacebar */
+        $(document).on("keyup", function(event) {
         // spacebar key ( cheat )
         if(event.keyCode == 32){
             hp = 100;
@@ -245,6 +225,11 @@ const GAME = (function() {
 
     /* The main processing of the game */
     const doFrame = function(now) {
+        if (forceEnd) {
+            // End the function execution
+            return;
+        }
+
         if (gameStartTime == 0) gameStartTime = now;
         
         /* Update the time remaining */
@@ -292,13 +277,15 @@ const GAME = (function() {
                                 //killer.increaseKill();
                                 Socket.update_player_kills(killer.getId(),killer.getKills());// emit for server record
 
+                                // drop weapon
+                                dropWeapon()
+                                // if(owned_weapon != null){
+                                //     owned_weapon.setOwner(null)
+                                //     Socket.update_weapon_owner(owned_weapon.getId(), null)// emit
+                                //     owned_weapon = null;
+                                // }
+
                                 // respawn
-                                if(owned_weapon != null){
-                                    owned_weapon.setOwner(null)
-                                    Socket.update_weapon_owner(owned_weapon.getId(), null)// emit
-                                    owned_weapon = null;
-                                }
-                                
                                 Object.values(users_list).forEach((playerId, index) => {
                                     if( playerId == self.getId()){
                                         // Retrieve the corresponding spawn position based on the index
@@ -340,7 +327,6 @@ const GAME = (function() {
                 let {x,y} = players.find(player => player.getId() == weapon.getOwner()).getXY();
                 weapon.setXY(x+20,y)
             }else{
-                if(weapon.getId()==0)console.log("reset")
                 weapon.reset()
             }
         }
@@ -451,6 +437,15 @@ const GAME = (function() {
         obstacles.push(Obstacle(ctx, 800, 200));
         obstacles.push(Obstacle(ctx, 200, 800));
         obstacles.push(Obstacle(ctx, 800, 800));
+    }
+
+    const dropWeapon = function(){
+        if(owned_weapon != null){
+            owned_weapon.setOwner(null)
+            Socket.update_weapon_owner(owned_weapon.getId(), null)// emit
+            owned_weapon.reset()
+            owned_weapon = null;
+        }
     }
 
     return { gamePageInit, doFrame, updateOtherPlayers, addOtherBullets, updateOtherHp, updateOtherKills, showSelfKills, drawSpawnedWeapons, addWeaponsOwner, setWeaponsAngle};

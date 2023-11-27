@@ -10,6 +10,9 @@ const Bullet = function(ctx, x, y, cursor_x, cursor_y, id, stats) {
     let Hit = false;
     let reach_range = false;
 
+    const bulletImage = new Image();
+    bulletImage.src = "./Assets/TopDown/bullet.png";
+
     // This function sets the position.
     // - `xvalue` - The new x position
     // - `yvalue` - The new y position
@@ -73,8 +76,9 @@ const Bullet = function(ctx, x, y, cursor_x, cursor_y, id, stats) {
             reach_range = true;
         }
 
-        ctx.fillStyle = "yellow";
-        ctx.fillRect(x, y, 10, 10);
+        // ctx.fillStyle = "yellow";
+        // ctx.fillRect(x, y, 10, 10);
+        ctx.drawImage(bulletImage,0, 0, 7, 2, x, y, 10, 10)
 
         /* Restore saved settings */
         ctx.restore();

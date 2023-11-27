@@ -139,11 +139,11 @@ const Sprite = function(ctx, x, y) {
         /* TODO */
         /* Replace the following code to draw the sprite correctly */
         //
-        ctx.fillStyle = "red";
-        ctx.globalAlpha = 0.6;
-        ctx.fillRect(parseInt(x - size.width / 4), parseInt(y - size.height / 3),
-                      parseInt(size.width/2) , parseInt(size.height*5/6));
-        ctx.imageSmoothingEnabled = false;
+        // ctx.fillStyle = "red";
+        // ctx.globalAlpha = 0.6;
+        // ctx.fillRect(parseInt(x - size.width / 4), parseInt(y - size.height / 3),
+        //               parseInt(size.width/2) , parseInt(size.height*5/6));
+        // ctx.imageSmoothingEnabled = false;
         //
         
         ctx.drawImage(
