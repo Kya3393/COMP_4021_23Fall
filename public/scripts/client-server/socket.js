@@ -10,7 +10,11 @@ const Socket = (function() {
 
     // This function connects the server and initializes the socket
     const connect = function() {
-        socket = io();
+        if(!socket){
+            socket = io();
+        }else{
+            socket.socket.connect()
+        }
 
         // Wait for the socket to connect successfully
         socket.on("connect", () => {
@@ -142,7 +146,7 @@ const Socket = (function() {
     }
 
     const joinRoom = function(room){
-        if(socket ) {
+        if(socket && socket.connected) {
             console.log("joining room")
             Authentication.joinRoom(room, ()=> {
                 console.log("emiting join room")
