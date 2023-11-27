@@ -100,6 +100,9 @@ const GAME = (function() {
                     bullets.push(spread2_bullet);
                     bullet_amount-=3;
                 }
+                if(bullet_amount  <=  0){
+                    $("#bullet-remaining").text("Press R to reload");
+                }
                 
 
                 sounds.pistol.currentTime = 0
@@ -108,7 +111,6 @@ const GAME = (function() {
             }else{
                 sounds.pistol_no_ammo.currentTime=0
                 sounds.pistol_no_ammo.play()
-                $("#bullet-remaining").text("Press R to reload");
             }
         });
 
