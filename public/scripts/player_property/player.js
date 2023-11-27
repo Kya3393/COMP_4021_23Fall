@@ -77,6 +77,7 @@ const Player = function(ctx, x, y, gameArea, id) {
                 case 8: sprite.setSequence(sequences.moveRight); break;
             }
             direction = dir;
+            Socket.update_player_dir(direction, player_id)
         }
     };
 
@@ -94,6 +95,7 @@ const Player = function(ctx, x, y, gameArea, id) {
                 case 7: sprite.setSequence(sequences.idleRight); break;
                 case 8: sprite.setSequence(sequences.idleRight); break;
             }
+            Socket.update_player_stop(direction, player_id)
             direction = 0;
         }
     };
@@ -138,10 +140,11 @@ const Player = function(ctx, x, y, gameArea, id) {
             }
             if (gameArea.isPointInBox(x, y) && !Blocked){
                 //console.log("Updating pos of :" + player_id)
-                Socket.update_player_pos(x, y, player_id)
+                //Socket.update_player_pos(x, y, player_id) // emit replaced with dir broadcast
                 sprite.setXY(x, y);
             }
         }
+
 
         /* Update the sprite object */
         sprite.update(time);
@@ -193,7 +196,7 @@ const Player = function(ctx, x, y, gameArea, id) {
         setHp: setHp,
         getHp: getHp,
         increaseKill: increaseKill,
-        getKills: getKills
+        getKills: getKills,
 
     };
 };

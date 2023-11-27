@@ -205,6 +205,6 @@ const Sprite = function(ctx, x, y) {
         getBoundingBox: getBoundingBox,
         isReady: isReady,
         draw: draw,
-        update: update
+        update: update,
     };
 };

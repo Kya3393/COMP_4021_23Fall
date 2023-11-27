@@ -365,12 +365,31 @@ const GAME = (function() {
         requestAnimationFrame(doFrame);
     }
 
-    const updateOtherPlayers = function(x, y, player_id) {
+    const updateOtherPlayers_pos = function(x, y, player_id) {
         //console.log("updateOtherPlayers");
         //console.log(player_id);
         if(player_id != self.getId()){
-            players.find(player => player.getId() == player_id).setXY(x, y);
-            //players.find(player => player.getId() == player_id).setDirection(direction)
+            let other = players.find(player => player.getId() == player_id)
+            other.setXY(x, y);
+        }
+    }
+    const updateOtherPlayers_dir = function(direction, player_id) {
+        //console.log(player_id);
+        //console.log("dir" + direction);
+        if(player_id != self.getId()){
+            let other = players.find(player => player.getId() == player_id)
+            if(direction != 0){
+                other.move(direction)
+            }
+        }
+    }
+
+    const updateOtherPlayers_stop = function(direction, player_id) {
+        if(player_id != self.getId()){
+            let other = players.find(player => player.getId() == player_id)
+            if(direction != 0){
+                other.stop(direction)
+            }
         }
     }
 
@@ -448,5 +467,5 @@ const GAME = (function() {
         }
     }
 
-    return { gamePageInit, doFrame, updateOtherPlayers, addOtherBullets, updateOtherHp, updateOtherKills, showSelfKills, drawSpawnedWeapons, addWeaponsOwner, setWeaponsAngle};
+    return { gamePageInit, doFrame, updateOtherPlayers_pos, updateOtherPlayers_dir, updateOtherPlayers_stop, addOtherBullets, updateOtherHp, updateOtherKills, showSelfKills, drawSpawnedWeapons, addWeaponsOwner, setWeaponsAngle};
 })();

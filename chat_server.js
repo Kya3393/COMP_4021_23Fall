@@ -422,7 +422,15 @@ io.on("connection", (socket) => {
             // console.log(room)
             // console.log(gameRoomList[room])
 
-            io.to(room).emit("new player info", x, y, player_id)
+            io.to(room).emit("new player pos", x, y, player_id)
+        })
+
+        socket.on("broadcast player dir", (direction, player_id, room) => {
+            io.to(room).emit("new player dir", direction, player_id)
+        })
+
+        socket.on("broadcast player stop", (direction, player_id, room) => {
+            io.to(room).emit("new player stop", direction, player_id)
         })
 
         socket.on("broadcast new bullet", (x, y, mouse_x, mouse_y, id, stats, room) => {

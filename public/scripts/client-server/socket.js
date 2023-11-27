@@ -183,8 +183,16 @@ const Socket = (function() {
                     GAME.gamePageInit(users)
                 })
 
-                socket.on("new player info", (x, y, player_id) => {
-                    GAME.updateOtherPlayers(x, y, player_id)
+                socket.on("new player pos", (x, y, player_id) => {
+                    GAME.updateOtherPlayers_pos(x, y, player_id)
+                })
+
+                socket.on("new player dir", (direction, player_id) => {
+                    GAME.updateOtherPlayers_dir(direction, player_id)
+                })
+
+                socket.on("new player stop", (direction, player_id) => {
+                    GAME.updateOtherPlayers_stop(direction, player_id)
                 })
 
                 socket.on("new bullet info", (x, y, mouse_x, mouse_y, id, stats) => {
@@ -281,6 +289,13 @@ const Socket = (function() {
     const update_player_pos = function (x, y, player_id){
         socket.emit("broadcast player pos", x, y, player_id, socket_room)
     }
+    const update_player_dir = function (direction, player_id){
+        socket.emit("broadcast player dir", direction, player_id, socket_room)
+    }
+    const update_player_stop = function (direction, player_id){
+        socket.emit("broadcast player stop", direction, player_id, socket_room)
+    }
+
     const add_new_bullet = function (x, y, mouse_x, mouse_y, id, stats){
         //stats = JSON.stringify(stats)
         socket.emit("broadcast new bullet", x, y, mouse_x, mouse_y, id, stats, socket_room)
@@ -309,7 +324,7 @@ const Socket = (function() {
     }
     return { 
         getSocket, connect, disconnect, joinRoom, leaveRoom, createRoom, inRoom,  requestStartGame,
-        update_player_pos, add_new_bullet, update_player_hp, update_player_kills,
+        update_player_pos, update_player_dir, update_player_stop, add_new_bullet, update_player_hp, update_player_kills,
         endGame, getRoomInfo, returnToRoom,
         spawnWeapon, update_weapon_owner, broadcastMouseAngle};
 })();
