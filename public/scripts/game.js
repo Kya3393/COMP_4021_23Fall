@@ -168,7 +168,7 @@ const GAME = (function() {
             // console.log("reloading: " + reloading)
             // console.log("event : " + event.keyCode)
             
-            if(reloading == false){
+            if(reloading == false && owned_weapon != null){
                 if (event.keyCode == 114  ||  event.keyCode  ==  82) {      
                     $("#bullet-remaining").text("reload...");
                     bullet_amount = 0
