@@ -149,7 +149,8 @@ canvas, #game-start, #game-over, #menu-overlay {
     transform: translate(-50%, 15%);
 }
 canvas {
-    background: gray;
+    background: url("./Assets/background/bg.png");
+    background-size: cover;
     border: 1px solid black;
     background-size: cover;
 }

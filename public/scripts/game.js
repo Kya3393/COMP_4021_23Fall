@@ -32,7 +32,7 @@ const GAME = (function() {
         $("counter").show();
         cv = $("canvas").get(0);
         ctx = cv.getContext("2d");
-        /* Create the game area */
+        gameStartTime = 0;
         gameArea = BoundingBox(ctx, 50, 50, 950, 950);
 
         users_list = users
@@ -297,6 +297,7 @@ const GAME = (function() {
                     if(owned_weapon == null){
                         weapon.setOwner(self.getId())
                         owned_weapon = weapon
+                        $("#bullet-remaining").text(bullet_amount);
                         Socket.update_weapon_owner(weapon.getId(), self.getId())// emit
                     }
                 }
