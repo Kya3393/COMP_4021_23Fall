@@ -522,11 +522,10 @@ const UI = (function() {
 
     const toEndPage = function(playerScores){
         $("#counter").hide();
-        $("#game-over").show();
         console.log(playerScores);
         $("#final-kills").text(playerScores[Authentication.getUser().username])
 
-        const rankingList =  $("#player-ranking")
+        const endPage =  $("#game-over")
         // Convert the playerKills object into an array of [playerId, kills] pairs
         const playerKillsArray = Object.entries(playerScores);
 
@@ -534,22 +533,33 @@ const UI = (function() {
         playerKillsArray.sort((a, b) => b[1] - a[1]);
 
         // Clear the existing content of the ranking list
-        rankingList.text("");
-        let rankings = ""
+
+
+
+        // let rankings = ""
+        $('.temp').remove()
+        let  text = document.createElementNS('http://www.w3.org/2000/svg', 'text')
+        
 
         // Iterate over the sorted array and update the ranking list
         for (let i = 0; i < playerKillsArray.length; i++) {
             const [playerId, kills] = playerKillsArray[i];
             const rank = i + 1;
 
+            let  rank_record = document.createTextNode(`Rank ${rank}: Player ${playerId} - Kills: ${kills}`)
+            text.appendChild(rank_record)
+            endPage.append(text)
 
-            rankings += `Rank ${rank}: Player ${playerId} - Kills: ${kills}\n`;
+            text.setAttribute('x', '50%');
+            text.setAttribute('y', `${i*10 + 35}%`);
+            text.setAttribute('class', 'temp');
+            // rankings += `Rank ${rank}: Player ${playerId} - Kills: ${kills}`;
 
             // Append the list item to the ranking list
             // rankingList.append( $("<li>" + textContent + "</li>") );
         }
-        rankingList.text(rankings)
-        console.log(rankings)
+        // rankingList.text(rankings)
+        $("#game-over").show();
     }
 
 
