@@ -5,6 +5,20 @@ const Weapon = function(ctx, x, y, type, stats, id) {
     const spawn_y = y;
     let rotate_angle;
 
+    // Create image objects
+    const pistolImageUrl = "./Assets/TopDown/pistol.png";
+    const rifleImageUrl = "./Assets/TopDown/rifle.png";
+    const shotgunImageUrl = "./Assets/TopDown/shotgun.png";
+
+    const pistolImage = new Image();
+    pistolImage.src = pistolImageUrl;
+
+    const rifleImage = new Image();
+    rifleImage.src = rifleImageUrl;
+
+    const shotgunImage = new Image();
+    shotgunImage.src = shotgunImageUrl;
+
     // const types = {
     //     pistol:  { range: 500, speed: 2, rate: 5, dmg: 20 },
     //     rifle:    { range: 1000, speed: 5, rate: 10, dmg: 40 },
@@ -92,13 +106,29 @@ const Weapon = function(ctx, x, y, type, stats, id) {
                 Socket.broadcastMouseAngle(id, angle);
                 ctx.rotate(angle);
             }
-            ctx.fillRect(0, 0, 100, 10);
+            if (type == "pistol") {
+                // Draw pistol image
+                ctx.drawImage(pistolImage, 0, 0, 27, 16, 0, 0, 27*2, 16*2);
+            } else if (type == "rifle") {
+                // Draw rifle image
+                ctx.drawImage(rifleImage, 0, 0, 26, 7, 0, 0, 26*2, 7*2);
+            } else if (type == "shotgun") {
+                // Draw shotgun image
+                ctx.drawImage(shotgunImage, 0, 0, 27, 9, 0, 0, 27*2, 9*2);
+            }
         }
         else{
-           ctx.fillRect(x, y, 10, 10); 
+            if (type == "pistol") {
+                // Draw pistol image
+                ctx.drawImage(pistolImage, 0, 0, 27, 16, x, y, 27*2, 16*2);
+            } else if (type == "rifle") {
+                // Draw rifle image
+                ctx.drawImage(rifleImage, 0, 0, 26, 7, x, y, 26*2, 7*2);
+            } else if (type == "shotgun") {
+                // Draw shotgun image
+                ctx.drawImage(shotgunImage, 0, 0, 27, 9, x, y, 27*2, 9*2);
+            }
         }
-
-        
 
         /* Restore saved settings */
         ctx.restore();
