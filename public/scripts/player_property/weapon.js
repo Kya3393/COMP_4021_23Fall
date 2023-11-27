@@ -38,8 +38,8 @@ const Weapon = function(ctx, x, y, type, stats, id) {
         return id;
     };
 
-    const setType = function(type){
-        stats = types[type];
+    const getType = function(){
+        return type;
     }
 
     const getStats = function(){
@@ -113,7 +113,7 @@ const Weapon = function(ctx, x, y, type, stats, id) {
         getOwner: getOwner,
         setAngle: setAngle,
         getAngle: getAngle,
-        setType: setType,
+        getType: getType,
         getStats: getStats,
         update: update,
         randomize: randomize,

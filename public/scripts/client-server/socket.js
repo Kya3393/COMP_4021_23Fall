@@ -187,8 +187,8 @@ const Socket = (function() {
                     GAME.updateOtherPlayers(x, y, player_id)
                 })
 
-                socket.on("new bullet info", (x, y, mouse_x, mouse_y, id) => {
-                    GAME.addOtherBullets(x, y, mouse_x, mouse_y, id)
+                socket.on("new bullet info", (x, y, mouse_x, mouse_y, id, stats) => {
+                    GAME.addOtherBullets(x, y, mouse_x, mouse_y, id, stats)
                 })
 
                 socket.on("new hp info", (player_id, hp) => {
@@ -282,8 +282,9 @@ const Socket = (function() {
     const update_player_pos = function (x, y, player_id){
         socket.emit("broadcast player pos", x, y, player_id, socket_room)
     }
-    const add_new_bullet = function (x, y, mouse_x, mouse_y, id){
-        socket.emit("broadcast new bullet", x, y, mouse_x, mouse_y, id, socket_room)
+    const add_new_bullet = function (x, y, mouse_x, mouse_y, id, stats){
+        //stats = JSON.stringify(stats)
+        socket.emit("broadcast new bullet", x, y, mouse_x, mouse_y, id, stats, socket_room)
     }
 
     const update_player_hp = function (player_id, hp){

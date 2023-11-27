@@ -65,7 +65,7 @@ function initializeWeapons() {
         weaponList[i] = {
             Type,
             Pos,
-          ...Stats
+            Stats
         };
       }
       
@@ -421,8 +421,8 @@ io.on("connection", (socket) => {
             io.to(room).emit("new player info", x, y, player_id)
         })
 
-        socket.on("broadcast new bullet", (x, y, mouse_x, mouse_y, id, room) => {
-            io.to(room).emit("new bullet info", x, y, mouse_x, mouse_y, id)
+        socket.on("broadcast new bullet", (x, y, mouse_x, mouse_y, id, stats, room) => {
+            io.to(room).emit("new bullet info", x, y, mouse_x, mouse_y, id, stats)
         })
 
         socket.on("broadcast player hp", (player_id, hp, room) => {

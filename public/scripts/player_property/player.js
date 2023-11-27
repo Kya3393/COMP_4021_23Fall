@@ -29,7 +29,7 @@ const Player = function(ctx, x, y, gameArea, id) {
     // Player attributes
     const player_id = id;
     let speed = 150;
-    let hp = 3;
+    let hp = 100;
     let kills = 0;
 
     // This is the sprite object of the player created from the Sprite module.

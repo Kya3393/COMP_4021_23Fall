@@ -6,6 +6,7 @@ const GAME = (function() {
     let gameArea = null;
     let mouse_pos = { x: 0, y: 0 };
     let players = [];
+    let users_list = [];
     let self = null;
     let bullets =[];
     let bullet_amount = 30;
@@ -34,11 +35,7 @@ const GAME = (function() {
         /* Create the game area */
         gameArea = BoundingBox(ctx, 50, 50, 950, 950);
 
-        /* Create the sprites in the game */
-        // for( const player_id of Object.values(users)){
-        //     console.log("drawing "+ player_id);
-        //     players.push(Player(ctx, 500, 500, gameArea, player_id));
-        // }
+        users_list = users
         // Iterate through the player IDs
         Object.values(users).forEach((playerId, index) => {
             console.log("Drawing " + playerId);
@@ -49,6 +46,7 @@ const GAME = (function() {
         });
 
         self = players.find(player => player.getId() == Authentication.getUser().username);
+        $("#hp-remaining").text(self.getHp());
         
         /* Randomly spawn weapons on ground */
         Socket.spawnWeapon();
@@ -69,11 +67,27 @@ const GAME = (function() {
             //let{x, y} = self.getXY();
             if(bullet_amount > 0 && owned_weapon != null){
                 let {x,y} = owned_weapon.getXY()
-                const new_bullet = Bullet(ctx, x, y, mouse_pos.x, mouse_pos.y,self.getId(), owned_weapon.getStats());
-                Socket.add_new_bullet(x, y, mouse_pos.x, mouse_pos.y,self.getId());// emit add stats info
+                console.log(owned_weapon.getStats())
+                if (owned_weapon.getType() != "shotgun"){
+                    const new_bullet = Bullet(ctx, x, y, mouse_pos.x, mouse_pos.y,self.getId(), owned_weapon.getStats());
+
+                    Socket.add_new_bullet(x, y, mouse_pos.x, mouse_pos.y,self.getId(), owned_weapon.getStats());// emit add stats info
+                    bullets.push(new_bullet);
+                    bullet_amount--;
+                }else{
+                    const new_bullet = Bullet(ctx, x, y, mouse_pos.x, mouse_pos.y,self.getId(), owned_weapon.getStats());
+                    const spread1_bullet = Bullet(ctx, x, y, mouse_pos.x-10, mouse_pos.y-10,self.getId(), owned_weapon.getStats());
+                    const spread2_bullet = Bullet(ctx, x, y, mouse_pos.x+10, mouse_pos.y+10,self.getId(), owned_weapon.getStats());
+                    
+                    Socket.add_new_bullet(x, y, mouse_pos.x, mouse_pos.y,self.getId(), owned_weapon.getStats());// emit add stats info
+                    Socket.add_new_bullet(x, y, mouse_pos.x-10, mouse_pos.y-10,self.getId(), owned_weapon.getStats());// emit add stats info
+                    Socket.add_new_bullet(x, y, mouse_pos.x+10, mouse_pos.y+10,self.getId(), owned_weapon.getStats());// emit add stats info
+                    bullets.push(new_bullet);
+                    bullets.push(spread1_bullet);
+                    bullets.push(spread2_bullet);
+                    bullet_amount-=3;
+                }
                 
-                bullets.push(new_bullet);
-                bullet_amount--;
 
                 sounds.pistol.currentTime = 0
                 sounds.pistol.play()
@@ -232,7 +246,7 @@ const GAME = (function() {
         /* Update and Delete bullets */
         for( const del_bullet of bullets){
             const bullet_pos = del_bullet.getXY();
-            if(!gameArea.isPointInBox(bullet_pos.x, bullet_pos.y)){
+            if(!gameArea.isPointInBox(bullet_pos.x, bullet_pos.y) || !del_bullet.inRange()){
                 //console.log("delete bullet");
                 bullets.splice(bullets.findIndex(bullet => bullet == del_bullet), 1);
             }else{
@@ -243,7 +257,7 @@ const GAME = (function() {
                         if(player.getId() == self.getId() && !del_bullet.isHit()){
                             //console.log("hit");
                             del_bullet.setHit();
-                            self.decreaseHp(1);// set stats
+                            self.decreaseHp(del_bullet.getDmg());// set stats
                             $("#hp-remaining").text(self.getHp());
                             Socket.update_player_hp(self.getId(), self.getHp());// emit
             
@@ -251,7 +265,17 @@ const GAME = (function() {
                                 let killer = players.find(player => player.getId() == del_bullet.getId())
                                 //killer.increaseKill();
                                 Socket.update_player_kills(killer.getId(),killer.getKills());// emit for server record
-                                self.setHp(3);// respawn
+
+                                Object.values(users_list).forEach((playerId, index) => {
+                                    if( playerId == self.getId()){
+                                        // Retrieve the corresponding spawn position based on the index
+                                        const spawnPosition = spawnPositions[index];
+                                        self.setXY(spawnPosition.x, spawnPosition.y)
+                                        Socket.update_player_pos(spawnPosition.x, spawnPosition.y, playerId)
+                                    } 
+                                });
+
+                                self.setHp(100);// respawn
                                 $("#hp-remaining").text(self.getHp());
                                 Socket.update_player_hp(self.getId(), self.getHp());// emit
                             }
@@ -333,9 +357,9 @@ const GAME = (function() {
         }
     }
 
-    const addOtherBullets = function(x, y, mouse_x, mouse_y, id) {
+    const addOtherBullets = function(x, y, mouse_x, mouse_y, id, stats) {
         if(id != self.getId()){
-            bullets.push(Bullet(ctx, x, y, mouse_x, mouse_y, id));
+            bullets.push(Bullet(ctx, x, y, mouse_x, mouse_y, id, stats));
         }
     }
 

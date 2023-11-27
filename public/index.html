@@ -21,41 +21,46 @@
                         <stop offset="0.8" stop-color="purple" />
                     </linearGradient>
                 </defs>
+                <text id="game-description"  x="50%" y="5%">Pick up weapons! Shoot with your friends! </text>
                 <text id="game-title" x="50%" y="45%">Pixel Warfare</text>
-                <text x="50%" y="60%">Click here to start the game</text>
+                <text x="50%" y="70%">Click to start the game</text>
+                <text x="50%" y="98%">Compete for the most kills on scoreboard!</text>
             </svg>
             <svg xmlns="http://www.w3.org/2000/svg" id="counter" style="display: none;">
                 <text x="10" y="35">TIME:<tspan id="time-remaining">999</tspan></text>
-                <text x="10" y="65">HP:<tspan id="hp-remaining">3</tspan></text>
-                <text x="10" y="95">Bullet:<tspan id="bullet-remaining">30</tspan></text>
+                <text x="10" y="65">HP:<tspan id="hp-remaining"></tspan></text>
+                <text x="10" y="95">Bullet:<tspan id="bullet-remaining"></tspan></text>
                 
             </svg>
             <div id="menu-overlay" class="overlay row" >
-                <div id="front-page" class="content shadow row">
-                    <form id="signin-form" class="col">
-                        <div class="caption">SIGN IN</div>
+                <div id="front-page" class="content shadow column">
+                    <div  class="shadow row">
+                        <form id="signin-form" class="col">
+                            <div class="caption">SIGN IN</div>
+                            <div class="spacer-0"></div>
+                            <input id="signin-username" placeholder="Enter your username" autocomplete="off"></input>
+                            <input id="signin-password" type="password" placeholder="Enter your password"></input>
+                            <div class="spacer-0"></div>
+                            <button type="submit">Sign In</button>
+                            <div id="signin-message" class="warning center"></div>
+                            <div class="spacer-grow"></div>
+                        </form>
+            
                         <div class="spacer-0"></div>
-                        <input id="signin-username" placeholder="Enter your username" autocomplete="off"></input>
-                        <input id="signin-password" type="password" placeholder="Enter your password"></input>
-                        <div class="spacer-0"></div>
-                        <button type="submit">Sign In</button>
-                        <div id="signin-message" class="warning center"></div>
-                        <div class="spacer-grow"></div>
-                    </form>
-        
-                    <div class="spacer-0"></div>
-        
-                    <form id="register-form" class="col">
-                        <div class="caption">REGISTER TO CREATE NEW ACCOUNT</div>
-                        <div class="spacer-0"></div>
-                        <input id="register-username" maxlength="10" placeholder="Enter your username" autocomplete="off"></input>
-                        <input id="register-name" maxlength="16" placeholder="Enter your name" autocomplete="off"></input>
-                        <input id="register-password" type="password" placeholder="Enter your password" autocomplete="off"></input>
-                        <input id="register-confirm" type="password" placeholder="Enter your password again" autocomplete="off"></input>
-                        <div class="spacer-0"></div>
-                        <button type="submit">Register</button>
-                        <div id="register-message" class="warning center"></div>
-                    </form>
+            
+                        <form id="register-form" class="col">
+                            <div class="caption">REGISTER TO CREATE NEW ACCOUNT</div>
+                            <div class="spacer-0"></div>
+                            <input id="register-username" maxlength="10" placeholder="Enter your username" autocomplete="off"></input>
+                            <input id="register-name" maxlength="16" placeholder="Enter your name" autocomplete="off"></input>
+                            <input id="register-password" type="password" placeholder="Enter your password" autocomplete="off"></input>
+                            <input id="register-confirm" type="password" placeholder="Enter your password again" autocomplete="off"></input>
+                            <div class="spacer-0"></div>
+                            <button type="submit">Register</button>
+                            <div id="register-message" class="warning center"></div>
+                        </form>
+                    </div>
+                    <text class="hint">WASD for movement, E to pick up weapon/item, left-click to fire!</text> 
                 </div>
                 <div id="game-menu" class="row" >
                     <div id="main-menu-panel">

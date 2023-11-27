@@ -1,10 +1,14 @@
-const Bullet = function(ctx, x, y, cursor_x, cursor_y, id) {
+const Bullet = function(ctx, x, y, cursor_x, cursor_y, id, stats) {
 
-    let speed = 5;
+    const speed = stats.speed;
+    const range = stats.range;
+    const dmg = stats.dmg;
     let angle = 0;
+    let shotgun_spread = false;
     const origin_x = x;
     const origin_y = y;
     let Hit = false;
+    let reach_range = false;
 
     // This function sets the position.
     // - `xvalue` - The new x position
@@ -25,6 +29,10 @@ const Bullet = function(ctx, x, y, cursor_x, cursor_y, id) {
         Hit = true;
     };
 
+    const getDmg = function() {
+        return dmg;
+    };
+
     // This function sets the position.
     // - `xvalue` - The new x position
     // - `yvalue` - The new y position
@@ -38,7 +46,6 @@ const Bullet = function(ctx, x, y, cursor_x, cursor_y, id) {
         destination.y = y;
     }
 
-    const range = 1000;
     // This function draws the bullet.
     const draw = function() {
         /* Save the settings */
@@ -52,14 +59,18 @@ const Bullet = function(ctx, x, y, cursor_x, cursor_y, id) {
         //console.log(angle);
 
         // Calculate the distance to the cursor position
-        const distance = Math.sqrt(dx * dx + dy * dy);
+        const trv_x = x - origin_x;
+        const trv_y = y - origin_y;
+        const travel_distance = Math.sqrt(trv_x * trv_x + trv_y * trv_y);
 
         // Update the bullet's position based on the angle and speed, unless it exceeds the maximum distance
-        if (distance <= range) {
-        const velocityX = Math.cos(angle) * speed;
-        const velocityY = Math.sin(angle) * speed;
-        x += velocityX;
-        y += velocityY;
+        if (travel_distance <= range) {
+            const velocityX = Math.cos(angle) * speed;
+            const velocityY = Math.sin(angle) * speed;
+            x += velocityX;
+            y += velocityY;
+        }else{
+            reach_range = true;
         }
 
         ctx.fillStyle = "yellow";
@@ -69,8 +80,8 @@ const Bullet = function(ctx, x, y, cursor_x, cursor_y, id) {
         ctx.restore();
     };
 
-    const update = function() {// handle hit or outside
-   
+    const inRange = function() {// handle hit or outside
+        return !reach_range;
     };
 
 
@@ -79,10 +90,11 @@ const Bullet = function(ctx, x, y, cursor_x, cursor_y, id) {
         getXY: getXY,
         getId: getId,
         isHit: isHit,
+        getDmg: getDmg,
         setHit: setHit,
         setXY: setXY,
         setDestination: setDestination,
         draw: draw,
-        update: update
+        inRange: inRange
     };
 };
