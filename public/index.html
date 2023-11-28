@@ -172,6 +172,7 @@
                 initializeSequel(()=>
                 {
                     if(Authentication.getRoom()){
+                        Socket.leaveRoom(Authentication.getRoom())
                         console.log("getting to room")
                         Socket.joinRoom(Authentication.getRoom())
                         UI.roomPanel(Authentication.getRoom())
