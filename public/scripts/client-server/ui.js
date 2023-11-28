@@ -528,6 +528,7 @@ const UI = (function() {
     const toEndPage = function(playerScores, room){
         $("#counter").hide();
         console.log(playerScores);
+        console.log(room)
         $("#final-kills").text(playerScores[Authentication.getUser().username])
 
         const endPage =  $("#game-over")
