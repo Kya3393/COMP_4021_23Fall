@@ -35,8 +35,8 @@ const gameRoomList = {};
 
 const playerKills = {};
 // Function to update player kills
-function updatePlayerKills(playerId, kills) {
-  playerKills[playerId] = kills;
+function updatePlayerKills(playerId, kills,  room) {
+  playerKills[room][playerId] = kills;
 }
 
 const weaponList = {};
@@ -443,7 +443,7 @@ io.on("connection", (socket) => {
         })
 
         socket.on("broadcast player kills", (player_id, kills, room) => {
-            updatePlayerKills(player_id, kills)
+            updatePlayerKills(player_id, kills,  room)
             io.to(room).emit("new kills info", player_id)
         })
         
