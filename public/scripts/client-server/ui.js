@@ -144,14 +144,23 @@ const MainMenu = (function(){
 
         // Add the user one-by-one
         for (const room in roomList) {
+            var user_count = 0
+            for(user in roomList[room]){
+                user_count++
+            }
             roomListArea.append(
                 $("<div id='room-name-" + room + "' style='width: 100%;'></div>")
-                    .append(UI.getRoomDisplay(room, roomList[room]))
+                    .append(UI.getRoomDisplay(room, user_count))
             );
+
 
             $("#room-name-" + room).on("click", () => {
                 console.log("join room btn clicked")
-                Socket.joinRoom(room)
+                if(user_count < 4){
+                    Socket.joinRoom(room)
+                }else{
+                    $("#join-room-message").text("room is full!")
+                }
             })
         }
         
@@ -431,15 +440,11 @@ const UI = (function() {
             .append($("<span class='user-name'> Player Name: " + username + "</span>" + "<div class='spacer-grow'></div>"))
     };
 
-    const getRoomDisplay = function(room, users =  null){
-        if(!users){
+    const getRoomDisplay = function(room, user_count =  0){
+        if(user_count === 0){
             return $("<div class='field-content row shadow'></div>")
                 .append($("<span class='room-name'>" + room + "</span>" + "<div class='spacer-grow'></div>" + "<button id='button-id-"+ room + "' class='join-room-button'><span class='join-room-text'>Join</span></button"))
         }else{
-            var user_count = 0
-            for(user in users){
-                user_count++
-            }
             return $("<div class='field-content row shadow'></div>")
             .append($("<span class='room-name'>" + room + "</span>" + "<div class='spacer-grow'></div>" + "<span style='color: var(--button-color);'> " + user_count + "/4 </span>" + "<button id='button-id-"+ room + "' class='join-room-button'><span class='join-room-text'>Join</span></button"))
         }
