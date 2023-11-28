@@ -210,7 +210,9 @@ const Socket = (function() {
                 socket.on("show end page", (playerScores) => {
                     playerScores = JSON.parse(playerScores)
                     console.log(playerScores)
+                    GAME.otherforceEnd()
                     UI.toEndPage(playerScores)
+                    
                 })
 
                 socket.on("draw weapon", (initialWeaponInfo) => {
