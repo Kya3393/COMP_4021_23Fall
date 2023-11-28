@@ -525,14 +525,14 @@ const UI = (function() {
         $("#counter").hide();
     }
 
-    const toEndPage = function(playerScores){
+    const toEndPage = function(playerScores, room){
         $("#counter").hide();
         console.log(playerScores);
         $("#final-kills").text(playerScores[Authentication.getUser().username])
 
         const endPage =  $("#game-over")
         // Convert the playerKills object into an array of [playerId, kills] pairs
-        const playerKillsArray = Object.entries(playerScores);
+        const playerKillsArray = Object.entries(playerScores[room]);
 
         // Sort the array based on kills in descending order
         playerKillsArray.sort((a, b) => b[1] - a[1]);

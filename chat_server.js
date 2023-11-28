@@ -408,7 +408,7 @@ io.on("connection", (socket) => {
             io.to(room).emit("start game", JSON.stringify(gameRoomList[room]))
 
             for(player in gameRoomList[room]){
-                playerKills[player] = 0
+                playerKills[room][player] = 0
             }
 
             initializeWeapons()
@@ -447,7 +447,7 @@ io.on("connection", (socket) => {
         })
         
         socket.on("end game", (room) => {
-            io.to(room).emit("show end page", JSON.stringify(playerKills))
+            io.to(room).emit("show end page", JSON.stringify(playerKills, room))
         })
 
         socket.on("spawn weapon", (room) => {

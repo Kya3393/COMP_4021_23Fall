@@ -207,10 +207,11 @@ const Socket = (function() {
                     GAME.updateOtherKills(player_id)
                 })
 
-                socket.on("show end page", (playerScores) => {
+                socket.on("show end page", (playerScores, room) => {
                     playerScores = JSON.parse(playerScores)
+                    room = JSON.parse(room)
                     console.log(playerScores)
-                    UI.toEndPage(playerScores)
+                    UI.toEndPage(playerScores, room)
                 })
 
                 socket.on("draw weapon", (initialWeaponInfo) => {
