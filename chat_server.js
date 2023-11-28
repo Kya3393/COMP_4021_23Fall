@@ -447,7 +447,7 @@ io.on("connection", (socket) => {
         })
         
         socket.on("end game", (room) => {
-            io.to(room).emit("show end page", JSON.stringify(playerKills, room))
+            io.to(room).emit("show end page", JSON.stringify(playerKills), JSON.stringify(room))
         })
 
         socket.on("spawn weapon", (room) => {
