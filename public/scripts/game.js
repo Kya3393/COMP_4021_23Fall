@@ -275,7 +275,7 @@ const GAME = (function() {
                             if( self.getHp() <= 0){// use getHp to display Hp bar for each player?
                                 let killer = players.find(player => player.getId() == del_bullet.getId())
                                 //killer.increaseKill();
-                                Socket.update_player_kills(killer.getId(),killer.getKills());// emit for server record
+                                Socket.update_player_kills(killer.getId(),killer.getKills()+1);// emit for server record
 
                                 // drop weapon
                                 dropWeapon()

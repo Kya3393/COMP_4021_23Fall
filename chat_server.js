@@ -34,10 +34,6 @@ const onlineUsers = {};
 const gameRoomList = {};
 
 const playerKills = {};
-// Function to update player kills
-function updatePlayerKills(playerId, kills,  room) {
-  playerKills[room][playerId] = kills;
-}
 
 const weaponList = {};
 const weaponTypes = {
@@ -408,9 +404,9 @@ io.on("connection", (socket) => {
             io.to(room).emit("start game", JSON.stringify(gameRoomList[room]))
 
             playerKills[room] = {}
-            for(player in gameRoomList[room]){
-                playerKills[room][player] = 0
-            }
+            // for(player in gameRoomList[room]){
+            //     playerKills[room][player] = 0
+            // }
 
             initializeWeapons()
         })
@@ -443,7 +439,10 @@ io.on("connection", (socket) => {
         })
 
         socket.on("broadcast player kills", (player_id, kills, room) => {
-            updatePlayerKills(player_id, kills,  room)
+            // console.log(player_id)
+            // console.log(kills)
+            playerKills[room][player_id] = kills;
+            console.log(playerKills[room][player_id])
             io.to(room).emit("new kills info", player_id)
         })
         
