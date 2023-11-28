@@ -467,5 +467,9 @@ const GAME = (function() {
         }
     }
 
-    return { gamePageInit, doFrame, updateOtherPlayers_pos, updateOtherPlayers_dir, updateOtherPlayers_stop, addOtherBullets, updateOtherHp, updateOtherKills, showSelfKills, drawSpawnedWeapons, addWeaponsOwner, setWeaponsAngle};
+    const otherforceEnd = function(){
+        forceEnd = true
+    }
+
+    return { gamePageInit, doFrame, updateOtherPlayers_pos, updateOtherPlayers_dir, updateOtherPlayers_stop, addOtherBullets, updateOtherHp, updateOtherKills, showSelfKills, drawSpawnedWeapons, addWeaponsOwner, setWeaponsAngle, otherforceEnd};
 })();

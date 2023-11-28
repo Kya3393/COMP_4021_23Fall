@@ -211,7 +211,8 @@ const Socket = (function() {
                     playerScores = JSON.parse(playerScores)
                     room = JSON.parse(room)
                     console.log(playerScores)
-                    UI.toEndPage(playerScores, room)
+                    GAME.otherforceEnd()
+                    UI.toEndPage(playerScores)
                 })
 
                 socket.on("draw weapon", (initialWeaponInfo) => {
