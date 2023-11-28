@@ -529,7 +529,7 @@ const UI = (function() {
         $("#counter").hide();
         console.log(playerScores);
         console.log(room)
-        $("#final-kills").text(playerScores[room][Authentication.getUser().username] + 1)
+        $("#final-kills").text(playerScores[room][Authentication.getUser().username])
 
         const endPage =  $("#game-over")
         // Convert the playerKills object into an array of [playerId, kills] pairs
@@ -552,7 +552,7 @@ const UI = (function() {
 
             let  text = document.createElementNS('http://www.w3.org/2000/svg', 'text')
 
-            let  rank_record = document.createTextNode(`Rank ${rank}: Player ${playerKillsArray[player][0]} - Kills: ${playerKillsArray[player][1] + 1}`)
+            let  rank_record = document.createTextNode(`Rank ${rank}: Player ${playerKillsArray[player][0]} - Kills: ${playerKillsArray[player][1]}`)
             text.appendChild(rank_record)
             endPage.append(text)
 

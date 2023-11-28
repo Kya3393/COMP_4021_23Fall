@@ -172,7 +172,7 @@ const Player = function(ctx, x, y, gameArea, id) {
     }
     const increaseKill = function(){
         kills +=1;
-        console.log(id+"increase kills:"+kills);
+        console.log(id+" increase kills:"+kills);
     }
     const getKills = function(){// for printing score
         return kills;
